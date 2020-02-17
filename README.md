@@ -1,16 +1,16 @@
-Relative Risk of Cervical Neoplasms Associated with Copper and Levonorgestrel Secreting Intrauterine Devices: <br> Real World Evidence from the OHDSI Network
+Relative Risk of Cervical Neoplasms Associated with Copper and Levonorgestrel Secreting Intrauterine Devices: Real World Evidence from the OHDSI Network
 ==============================
 
 <img src="https://img.shields.io/badge/Study%20Status-Design%20Finalized-brightgreen.svg" alt="Study Status: Design Finalized"> 
 
-- Analytics use case(s): **`Characterization` and `Population-Level Estimation`**
-- Study type: **`Clinical Application`**
+- Analytics use case(s): **Characterization** and **Population-Level Estimation**
+- Study type: **Clinical Application**
 - Tags: **iud**
-- Study lead: **Matthew Spotnitz and Karthik Natarajan**
-- Study lead forums tag: **[Study Forum Post](https://forums.ohdsi.org/t/iud-study-updates/8851)**
-- Study start date: **09/23/2019**
+- Study lead: **Matthew Spotnitz** and **Karthik Natarajan**
+- Study lead forums tag: **[mattspotnitz](https://forums.ohdsi.org/u/mattspotnitz)**
+- Study start date: **September 23, 2019**
 - Study end date: **-**
-- Protocol: **[Protocol](https://github.com/ohdsi-studies/IUDEHREstimationStudy/blob/master/documents/IUD%20Cervical%20Neoplasms%20Estimation%20Protocol.docx)**
+- Protocol: **[Word file](https://github.com/ohdsi-studies/IUDEHREstimationStudy/blob/master/documents/IUD%20Cervical%20Neoplasms%20Estimation%20Protocol.docx)**
 - Publications: **[Prior single site study](https://journals.lww.com/greenjournal/fulltext/2020/02000/relative_risk_of_cervical_neoplasms_among_copper.11.aspx)**
 - Results explorer: **-**
 
