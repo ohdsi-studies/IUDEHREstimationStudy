@@ -11,8 +11,10 @@ Relative Risk of Cervical Neoplasms Associated with Copper and Levonorgestrel Se
 - Study start date: **September 23, 2019**
 - Study end date: **-**
 - Protocol: **[Word file](https://github.com/ohdsi-studies/IUDEHREstimationStudy/blob/master/documents/IUD%20Cervical%20Neoplasms%20Estimation%20Protocol.docx)**
-- Publications: **[Prior single site study](https://journals.lww.com/greenjournal/fulltext/2020/02000/relative_risk_of_cervical_neoplasms_among_copper.11.aspx)**
+- Publications: **-**
 - Results explorer: **-**
+
+This study extends the [prior single-site study](https://journals.lww.com/greenjournal/fulltext/2020/02000/relative_risk_of_cervical_neoplasms_among_copper.11.aspx) to the OHDSI network.
 
 
 Requirements
