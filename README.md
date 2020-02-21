@@ -124,16 +124,27 @@ Run Study
             maxCores = maxCores)
 	```
 
-4. Please email both Matt Spotnitz (mes2165 at cumc dot columbia dot edu) and Karthik Natarajan (kn2174 at cumc dot columbia dot edu) an account to upload results. Then upload the file ```export/Results<DatabaseId>.zip``` in the output folder to the study coordinator. 
-		
-5. To view the results, use the Shiny app:
+4. To view the results, use the Shiny app:
 
 	```r
-	prepareForEvidenceExplorer(paste0("Result_",databaseId,".zip"), "/shinyData")
+	prepareForEvidenceExplorer(paste0("Results",databaseId,".zip"), "/shinyData")
 	launchEvidenceExplorer("/shinyData", blind = TRUE)
 	```
+	
+	Note that you can save plots from within the Shiny app. It is possible to view results from more than one database by applying `prepareForEvidenceExplorer` to the Results file from each database, and using the same data folder. Set `blind = FALSE` if you wish to be unblinded to the final results.
   
-  Note that you can save plots from within the Shiny app. It is possible to view results from more than one database by applying `prepareForEvidenceExplorer` to the Results file from each database, and using the same data folder. Set `blind = FALSE` if you wish to be unblinded to the final results.
+5. Please contact both Matt Spotnitz (mes2165 at cumc dot columbia dot edu) and Karthik Natarajan (kn2174 at cumc dot columbia dot edu) for an account and key in order to upload the results. Once the account information is provided, the file ```export/Results<DatabaseId>.zip``` in the export folder can be uploaded to the study coordinator. Below is the R code to upload the files:
+
+	```r
+    # one time R package install
+    install_github("ohdsi/OhdsiSharing")
+ 
+    # upload local file to sftp server study folder using the '/tmp/privateKeyFileName' private key
+    privateKeyFileName <- ""                        #full path to the private key file that was provided by the study coordinator
+    userName <- ""                                  #username provided by study coordinator
+    fileName <- paste0("Results",databaseId,".zip") #results zip file
+    submitResults(outputFolder, fileName, userName, privateKeyFileName)
+    ```
 
 
 Run for Claims Data
@@ -141,60 +152,60 @@ Run for Claims Data
 
 As mentioned above, if you have access to a claims data follow the below instructions to run an additional analysis.
 
-	```r
-	devtools::install_github("https://github.com/ohdsi-studies/IUDEHREstimationStudy/additionalEstimationPackage/IUDClaimsEstimation")
-	library(IUDClaimsStudy)
-	
-	# Optional: specify where the temporary files (used by the ff package) will be created:
-	options(fftempdir = "c:/FFtemp")
-	
-	# Maximum number of cores to be used:
-	maxCores <- parallel::detectCores()
-	
-	# Minimum cell count when exporting data:
-	minCellCount <- 10
-	
-	# The folder where the study intermediate and result files will be written:
-	outputFolder <- paste0(outputFolder,"/IUDClaimsStudy")
-	
-	# Details for connecting to the server:
-	# See ?DatabaseConnector::createConnectionDetails for help
-	connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "postgresql",
-									server = "some.server.com/ohdsi",
-									user = "",
-									password = "")
-	
-	# The name of the database schema where the CDM data can be found:
-	cdmDatabaseSchema <- "cdm_synpuf"
-	
-	# The name of the database schema and table where the study-specific cohorts will be instantiated:
-	cohortDatabaseSchema <- "scratch.dbo" #You mush have rights to create tables in this schema
-	cohortTable <- "iud_study_claims"
-	
-	# Some meta-information that will be used by the export function:
-	databaseId <- ""          #SiteName
-	databaseName <- ""        #SiteName_DatabaseName
-	databaseDescription <- "" #Description of site's database
-	
-	# For Oracle: define a schema that can be used to emulate temp tables:
-	oracleTempSchema <- NULL
-	
-	IUDClaimsEstimation::execute(connectionDetails = connectionDetails,
-            cdmDatabaseSchema = cdmDatabaseSchema,
-            cohortDatabaseSchema = cohortDatabaseSchema,
-            cohortTable = cohortTable,
-            oracleTempSchema = oracleTempSchema,
-            outputFolder = outputFolder,
-            databaseId = databaseId,
-            databaseName = databaseName,
-            databaseDescription = databaseDescription,
-            createCohorts = TRUE,
-            synthesizePositiveControls = TRUE,
-            runAnalyses = TRUE,
-            runDiagnostics = TRUE,
-            packageResults = TRUE,
-            maxCores = maxCores)
-	```
+```r
+devtools::install_github("https://github.com/ohdsi-studies/IUDEHREstimationStudy/additionalEstimationPackage/IUDClaimsEstimation")
+library(IUDClaimsStudy)
+
+# Optional: specify where the temporary files (used by the ff package) will be created:
+options(fftempdir = "c:/FFtemp")
+
+# Maximum number of cores to be used:
+maxCores <- parallel::detectCores()
+
+# Minimum cell count when exporting data:
+minCellCount <- 10
+
+# The folder where the study intermediate and result files will be written:
+outputFolder <- paste0(outputFolder,"/IUDClaimsStudy")
+
+# Details for connecting to the server:
+# See ?DatabaseConnector::createConnectionDetails for help
+connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "postgresql",
+                                server = "some.server.com/ohdsi",
+                                user = "",
+                                password = "")
+
+# The name of the database schema where the CDM data can be found:
+cdmDatabaseSchema <- "cdm_synpuf"
+
+# The name of the database schema and table where the study-specific cohorts will be instantiated:
+cohortDatabaseSchema <- "scratch.dbo" #You mush have rights to create tables in this schema
+cohortTable <- "iud_study_claims"
+
+# Some meta-information that will be used by the export function:
+databaseId <- ""          #SiteName
+databaseName <- ""        #SiteName_DatabaseName
+databaseDescription <- "" #Description of site's database
+
+# For Oracle: define a schema that can be used to emulate temp tables:
+oracleTempSchema <- NULL
+
+IUDClaimsEstimation::execute(connectionDetails = connectionDetails,
+        cdmDatabaseSchema = cdmDatabaseSchema,
+        cohortDatabaseSchema = cohortDatabaseSchema,
+        cohortTable = cohortTable,
+        oracleTempSchema = oracleTempSchema,
+        outputFolder = outputFolder,
+        databaseId = databaseId,
+        databaseName = databaseName,
+        databaseDescription = databaseDescription,
+        createCohorts = TRUE,
+        synthesizePositiveControls = TRUE,
+        runAnalyses = TRUE,
+        runDiagnostics = TRUE,
+        packageResults = TRUE,
+        maxCores = maxCores)
+```
 
 
 Development

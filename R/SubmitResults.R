@@ -23,23 +23,20 @@
 #' @param outputFolder   Name of local folder where the results were generated; make sure to use forward slashes
 #'                       (/). Do not use a folder on a network drive since this greatly impacts
 #'                       performance.
-#' @param key            The key string as provided by the study coordinator
-#' @param secret         The secret string as provided by the study coordinator
+#' @param userName       The username used to submit resutls to the study coordinator
+#' @param privateKeyFile         The private key as provided by the study coordinator
 #'
 #' @return
 #' TRUE if the upload was successful.
 #'
 #' @export
-submitResults <- function(outputFolder, key, secret) {
-  zipName <- file.path(outputFolder, "StudyResults.zip")
+submitResults <- function(outputFolder, fileName, userName, privateKeyFile) {
+  zipName <- file.path(outputFolder, fileName)
   if (!file.exists(zipName)) {
     stop(paste("Cannot find file", zipName))
   }
   writeLines(paste0("Uploading file '", zipName, "' to study coordinating center"))
-  result <- OhdsiSharing::putS3File(file = zipName,
-                                    bucket = "ohdsi-study-skeleton",
-                                    key = key,
-                                    secret = secret)
+  result <- OhdsiSharing::sftpUploadFile(privateKeyFile, userName, zipName)
   if (result) {
     writeLines("Upload complete")
   } else {
