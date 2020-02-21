@@ -152,60 +152,60 @@ Run for Claims Data
 
 As mentioned above, if you have access to a claims data follow the below instructions to run an additional analysis.
 
-	```r
-	devtools::install_github("https://github.com/ohdsi-studies/IUDEHREstimationStudy/additionalEstimationPackage/IUDClaimsEstimation")
-	library(IUDClaimsStudy)
-	
-	# Optional: specify where the temporary files (used by the ff package) will be created:
-	options(fftempdir = "c:/FFtemp")
-	
-	# Maximum number of cores to be used:
-	maxCores <- parallel::detectCores()
-	
-	# Minimum cell count when exporting data:
-	minCellCount <- 10
-	
-	# The folder where the study intermediate and result files will be written:
-	outputFolder <- paste0(outputFolder,"/IUDClaimsStudy")
-	
-	# Details for connecting to the server:
-	# See ?DatabaseConnector::createConnectionDetails for help
-	connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "postgresql",
-									server = "some.server.com/ohdsi",
-									user = "",
-									password = "")
-	
-	# The name of the database schema where the CDM data can be found:
-	cdmDatabaseSchema <- "cdm_synpuf"
-	
-	# The name of the database schema and table where the study-specific cohorts will be instantiated:
-	cohortDatabaseSchema <- "scratch.dbo" #You mush have rights to create tables in this schema
-	cohortTable <- "iud_study_claims"
-	
-	# Some meta-information that will be used by the export function:
-	databaseId <- ""          #SiteName
-	databaseName <- ""        #SiteName_DatabaseName
-	databaseDescription <- "" #Description of site's database
-	
-	# For Oracle: define a schema that can be used to emulate temp tables:
-	oracleTempSchema <- NULL
-	
-	IUDClaimsEstimation::execute(connectionDetails = connectionDetails,
-            cdmDatabaseSchema = cdmDatabaseSchema,
-            cohortDatabaseSchema = cohortDatabaseSchema,
-            cohortTable = cohortTable,
-            oracleTempSchema = oracleTempSchema,
-            outputFolder = outputFolder,
-            databaseId = databaseId,
-            databaseName = databaseName,
-            databaseDescription = databaseDescription,
-            createCohorts = TRUE,
-            synthesizePositiveControls = TRUE,
-            runAnalyses = TRUE,
-            runDiagnostics = TRUE,
-            packageResults = TRUE,
-            maxCores = maxCores)
-	```
+```r
+devtools::install_github("https://github.com/ohdsi-studies/IUDEHREstimationStudy/additionalEstimationPackage/IUDClaimsEstimation")
+library(IUDClaimsStudy)
+
+# Optional: specify where the temporary files (used by the ff package) will be created:
+options(fftempdir = "c:/FFtemp")
+
+# Maximum number of cores to be used:
+maxCores <- parallel::detectCores()
+
+# Minimum cell count when exporting data:
+minCellCount <- 10
+
+# The folder where the study intermediate and result files will be written:
+outputFolder <- paste0(outputFolder,"/IUDClaimsStudy")
+
+# Details for connecting to the server:
+# See ?DatabaseConnector::createConnectionDetails for help
+connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "postgresql",
+                                server = "some.server.com/ohdsi",
+                                user = "",
+                                password = "")
+
+# The name of the database schema where the CDM data can be found:
+cdmDatabaseSchema <- "cdm_synpuf"
+
+# The name of the database schema and table where the study-specific cohorts will be instantiated:
+cohortDatabaseSchema <- "scratch.dbo" #You mush have rights to create tables in this schema
+cohortTable <- "iud_study_claims"
+
+# Some meta-information that will be used by the export function:
+databaseId <- ""          #SiteName
+databaseName <- ""        #SiteName_DatabaseName
+databaseDescription <- "" #Description of site's database
+
+# For Oracle: define a schema that can be used to emulate temp tables:
+oracleTempSchema <- NULL
+
+IUDClaimsEstimation::execute(connectionDetails = connectionDetails,
+        cdmDatabaseSchema = cdmDatabaseSchema,
+        cohortDatabaseSchema = cohortDatabaseSchema,
+        cohortTable = cohortTable,
+        oracleTempSchema = oracleTempSchema,
+        outputFolder = outputFolder,
+        databaseId = databaseId,
+        databaseName = databaseName,
+        databaseDescription = databaseDescription,
+        createCohorts = TRUE,
+        synthesizePositiveControls = TRUE,
+        runAnalyses = TRUE,
+        runDiagnostics = TRUE,
+        packageResults = TRUE,
+        maxCores = maxCores)
+```
 
 
 Development

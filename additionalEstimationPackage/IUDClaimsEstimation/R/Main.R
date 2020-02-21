@@ -121,86 +121,117 @@ execute <- function(connectionDetails,
     }
   }
   
-  if (runAnalyses) {
-    ParallelLogger::logInfo("Running CohortMethod analyses")
-    runCohortMethod(connectionDetails = connectionDetails,
-                    cdmDatabaseSchema = cdmDatabaseSchema,
-                    cohortDatabaseSchema = cohortDatabaseSchema,
-                    cohortTable = cohortTable,
-                    oracleTempSchema = oracleTempSchema,
-                    outputFolder = outputFolder,
-                    maxCores = maxCores)
+  cohortCountsFile <- file.path(outputFolder, "CohortCounts.csv")
+  if(!file.exists(cohortCountsFile)) {
+    ParallelLogger::logInfo(paste("CohortCounts file not found. File: ", cohortCountsFile))
+  } else {
 
-    cohortCounts <- read.csv(file.path(outputFolder, "CohortCounts.csv")) #get the cohort counts from earlier when cohorts are created
-    pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDCLW")
+    cohortCounts <- read.csv(cohortCountsFile) #get the cohort counts from earlier when cohorts are created
+    pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDEHRStudy")
     cohortsToCreate <- read.csv(pathToCsv)
 
-    for (i in 1:nrow(cohortsToCreate)) {
-
-          ParallelLogger::logInfo(paste("Running Cohort Characterization for", cohortsToCreate$name[i]))
-          runCohortCharacterization(connectionDetails,
-                                    cdmDatabaseSchema,
-                                    cohortDatabaseSchema,
-                                    cohortTable,
-                                    oracleTempSchema,
-                                    cohortsToCreate$cohortId[i],
-                                    outputFolder, cohortsToCreate,
-                                    cohortCounts, minCellCount)
+    if (!validCohort(1771648, cohortCounts, minCellCount)) { #LNG-IUS
+      ParallelLogger::logInfo("1771648 - LNG-IUS cohort count is too low (less than min cell count) to run study.")
+    }
+    if (!validCohort(1771647, cohortCounts, minCellCount)) { #Cu-IUD
+      ParallelLogger::logInfo("1771647 - Cu-IUD cohort count is too low (less than min cell count) to run study.")
+    }
+    if (!validCohort(1771054, cohortCounts, minCellCount)) { #Alt High Grade Cervical Neoplasm
+      ParallelLogger::logInfo("1771054 - Alt High Grade Cervical Neoplasm cohort count is too low (less than min cell count) to run study.")
     }
 
-    ParallelLogger::logInfo("Calculating cumulative incidence for Cu...")
-    #calculate cumulative incidence for Cu and LNG
-    calculateCumulativeIncidence(connectionDetails,
-                                 cohortDatabaseSchema,
-                                 cdmDatabaseSchema,
-                                 cohortTable,
-                                 oracleTempSchema,
-                                 1771647, #Cu-IUD
-                                 1771054, #Alt High Grade Cervical Neoplasm
-                                 outputFolder)
-
-    ParallelLogger::logInfo("Calculating cumulative incidence for LNG...")
-    calculateCumulativeIncidence(connectionDetails,
-                                 cohortDatabaseSchema,
-                                 cdmDatabaseSchema,
-                                 cohortTable,
-                                 oracleTempSchema,
-                                 1771648, #LNG-IUS
-                                 1771054, #Alt High Grade Cervical Neoplasm
-                                 outputFolder)
-
-    ParallelLogger::logInfo("Calculating cohort inclusion per year...")
-    calculatePerYearCohortInclusion(connectionDetails,
-                                    cohortDatabaseSchema,
-                                    cohortTable,
-                                    oracleTempSchema,
-                                    outputFolder,
-                                    minCellCount)
-
-    ParallelLogger::logInfo("Create KM graphs...")
-    createKMGraphs(outputFolder, cohortsToCreate)
-  }
-  
-  if (runDiagnostics) {
-    ParallelLogger::logInfo("Running diagnostics")
-    generateDiagnostics(outputFolder = outputFolder,
+    #Continue study if T and O cohorts have a large enough cohort count
+    if (validCohort(1771648, cohortCounts, minCellCount) &&
+        validCohort(1771647, cohortCounts, minCellCount) &&
+        validCohort(1771054, cohortCounts, minCellCount)) {
+      if (runAnalyses) {
+        ParallelLogger::logInfo("Running CohortMethod analyses")
+        runCohortMethod(connectionDetails = connectionDetails,
+                        cdmDatabaseSchema = cdmDatabaseSchema,
+                        cohortDatabaseSchema = cohortDatabaseSchema,
+                        cohortTable = cohortTable,
+                        oracleTempSchema = oracleTempSchema,
+                        outputFolder = outputFolder,
                         maxCores = maxCores)
-  }
 
-  ParallelLogger::logInfo("Copying some additional analysis and diagnostic files to export...")
-  copyAdditionalFilesToExportFolder(outputFolder,
-                                    cohortCounts,
-                                    minCellCount)
+        cohortCounts <- read.csv(file.path(outputFolder, "CohortCounts.csv")) #get the cohort counts from earlier when cohorts are created
+        pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDCLW")
+        cohortsToCreate <- read.csv(pathToCsv)
 
-  if (packageResults) {
-    ParallelLogger::logInfo("Packaging results")
-    exportResults(outputFolder = outputFolder,
-                  databaseId = databaseId,
-                  databaseName = databaseName,
-                  databaseDescription = databaseDescription,
-                  minCellCount = minCellCount,
-                  maxCores = maxCores)
+        for (i in 1:nrow(cohortsToCreate)) {
+
+              ParallelLogger::logInfo(paste("Running Cohort Characterization for", cohortsToCreate$name[i]))
+              runCohortCharacterization(connectionDetails,
+                                        cdmDatabaseSchema,
+                                        cohortDatabaseSchema,
+                                        cohortTable,
+                                        oracleTempSchema,
+                                        cohortsToCreate$cohortId[i],
+                                        outputFolder, cohortsToCreate,
+                                        cohortCounts, minCellCount)
+        }
+
+        ParallelLogger::logInfo("Calculating cumulative incidence for Cu...")
+        #calculate cumulative incidence for Cu and LNG
+        calculateCumulativeIncidence(connectionDetails,
+                                     cohortDatabaseSchema,
+                                     cdmDatabaseSchema,
+                                     cohortTable,
+                                     oracleTempSchema,
+                                     1771647, #Cu-IUD
+                                     1771054, #Alt High Grade Cervical Neoplasm
+                                     outputFolder)
+
+        ParallelLogger::logInfo("Calculating cumulative incidence for LNG...")
+        calculateCumulativeIncidence(connectionDetails,
+                                     cohortDatabaseSchema,
+                                     cdmDatabaseSchema,
+                                     cohortTable,
+                                     oracleTempSchema,
+                                     1771648, #LNG-IUS
+                                     1771054, #Alt High Grade Cervical Neoplasm
+                                     outputFolder)
+
+        ParallelLogger::logInfo("Calculating cohort inclusion per year...")
+        calculatePerYearCohortInclusion(connectionDetails,
+                                        cohortDatabaseSchema,
+                                        cohortTable,
+                                        oracleTempSchema,
+                                        outputFolder,
+                                        minCellCount)
+
+        ParallelLogger::logInfo("Create KM graphs...")
+        createKMGraphs(outputFolder, cohortsToCreate)
+      }
+
+      if (runDiagnostics) {
+        ParallelLogger::logInfo("Running diagnostics")
+        generateDiagnostics(outputFolder = outputFolder,
+                            maxCores = maxCores)
+      }
+
+      ParallelLogger::logInfo("Copying some additional analysis and diagnostic files to export...")
+      copyAdditionalFilesToExportFolder(outputFolder,
+                                        cohortCounts,
+                                        minCellCount)
+
+      if (packageResults) {
+        ParallelLogger::logInfo("Packaging results")
+        exportResults(outputFolder = outputFolder,
+                      databaseId = databaseId,
+                      databaseName = databaseName,
+                      databaseDescription = databaseDescription,
+                      minCellCount = minCellCount,
+                      maxCores = maxCores)
+      }
+    }
   }
-  
   invisible(NULL)
+}
+
+validCohort <- function(cohortId, cohortCounts, minCellCount) {
+
+    index <- grep(cohortId, cohortCounts$cohortDefinitionId)
+    return(length(index)!=0 && cohortCounts$personCount[index] > minCellCount)
+
 }
