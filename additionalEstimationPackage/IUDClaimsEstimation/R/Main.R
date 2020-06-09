@@ -130,19 +130,19 @@ execute <- function(connectionDetails,
     pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDEHRStudy")
     cohortsToCreate <- read.csv(pathToCsv)
 
-    if (!validCohort(1771648, cohortCounts, minCellCount)) { #LNG-IUS
-      ParallelLogger::logInfo("1771648 - LNG-IUS cohort count is too low (less than min cell count) to run study.")
+    if (!validCohort(1772698, cohortCounts, minCellCount)) { #LNG-IUS
+      ParallelLogger::logInfo("1772698 - LNG-IUS cohort count is too low (less than min cell count) to run study.")
     }
-    if (!validCohort(1771647, cohortCounts, minCellCount)) { #Cu-IUD
-      ParallelLogger::logInfo("1771647 - Cu-IUD cohort count is too low (less than min cell count) to run study.")
+    if (!validCohort(1772699, cohortCounts, minCellCount)) { #Cu-IUD
+      ParallelLogger::logInfo("1772699 - Cu-IUD cohort count is too low (less than min cell count) to run study.")
     }
     if (!validCohort(1771054, cohortCounts, minCellCount)) { #Alt High Grade Cervical Neoplasm
       ParallelLogger::logInfo("1771054 - Alt High Grade Cervical Neoplasm cohort count is too low (less than min cell count) to run study.")
     }
 
     #Continue study if T and O cohorts have a large enough cohort count
-    if (validCohort(1771648, cohortCounts, minCellCount) &&
-        validCohort(1771647, cohortCounts, minCellCount) &&
+    if (validCohort(1772698, cohortCounts, minCellCount) &&
+        validCohort(1772699, cohortCounts, minCellCount) &&
         validCohort(1771054, cohortCounts, minCellCount)) {
       if (runAnalyses) {
         ParallelLogger::logInfo("Running CohortMethod analyses")
