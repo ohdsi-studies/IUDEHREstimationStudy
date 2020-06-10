@@ -178,7 +178,7 @@ execute <- function(connectionDetails,
                                      cdmDatabaseSchema,
                                      cohortTable,
                                      oracleTempSchema,
-                                     1771647, #Cu-IUD
+                                     1772699, #Cu-IUD
                                      1771054, #Alt High Grade Cervical Neoplasm
                                      outputFolder)
 
@@ -188,7 +188,7 @@ execute <- function(connectionDetails,
                                      cdmDatabaseSchema,
                                      cohortTable,
                                      oracleTempSchema,
-                                     1771648, #LNG-IUS
+                                     1772698, #LNG-IUS
                                      1771054, #Alt High Grade Cervical Neoplasm
                                      outputFolder)
 
