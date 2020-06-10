@@ -36,7 +36,9 @@ submitResults <- function(outputFolder, fileName, userName, privateKeyFile) {
     stop(paste("Cannot find file", zipName))
   }
   writeLines(paste0("Uploading file '", zipName, "' to study coordinating center"))
-  result <- OhdsiSharing::sftpUploadFile(privateKeyFile, userName, zipName)
+  result <- OhdsiSharing::sftpUploadFile(privateKeyFileName = privateKeyFile, 
+                                         userName = userName, 
+                                         fileName = zipName)
   if (result) {
     writeLines("Upload complete")
   } else {
