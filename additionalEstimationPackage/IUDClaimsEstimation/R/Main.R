@@ -155,7 +155,7 @@ execute <- function(connectionDetails,
                         maxCores = maxCores)
 
         cohortCounts <- read.csv(file.path(outputFolder, "CohortCounts.csv")) #get the cohort counts from earlier when cohorts are created
-        pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDCLW")
+        pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDClaimsStudy")
         cohortsToCreate <- read.csv(pathToCsv)
 
         for (i in 1:nrow(cohortsToCreate)) {
