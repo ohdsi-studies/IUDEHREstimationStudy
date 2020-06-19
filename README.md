@@ -166,7 +166,7 @@ maxCores <- parallel::detectCores()
 minCellCount <- 10
 
 # The folder where the study intermediate and result files will be written:
-outputFolder <- paste0(outputFolder,"/IUDClaimsStudy")
+outputFolder <- paste0(outputFolder,"/IUDClaimsStudy") #If running this analysis in isolation (i.e. without EHR analysis) please enter the file directory here (i.e. "C:/IUDClaimsStudy")
 
 # Details for connecting to the server:
 # See ?DatabaseConnector::createConnectionDetails for help
