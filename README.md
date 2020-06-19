@@ -190,7 +190,7 @@ databaseDescription <- "" #Description of site's database
 # For Oracle: define a schema that can be used to emulate temp tables:
 oracleTempSchema <- NULL
 
-IUDClaimsEstimation::execute(connectionDetails = connectionDetails,
+IUDClaimsStudy::execute(connectionDetails = connectionDetails,
         cdmDatabaseSchema = cdmDatabaseSchema,
         cohortDatabaseSchema = cohortDatabaseSchema,
         cohortTable = cohortTable,
