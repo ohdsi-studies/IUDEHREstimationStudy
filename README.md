@@ -30,7 +30,7 @@ If you have access to a claims data set please also run this study on it, which 
 
 How to run
 ==========
-1. Follow [these instructions](https://ohdsi.github.io/Hades/rSetup.html) for seting up your R environment, including RTools and Java. 
+1. Follow [these instructions](https://ohdsi.github.io/Hades/rSetup.html) for setting up your R environment, including RTools and Java. 
 
 2. Open your study package in RStudio. Use the following code to install all the dependencies:
 
