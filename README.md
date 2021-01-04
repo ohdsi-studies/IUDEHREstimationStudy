@@ -26,88 +26,59 @@ Requirements
 - [Java](http://java.com)
 - 25 GB of free disk space
 
-See [these instructions](https://ohdsi.github.io/MethodsLibrary/rSetup.html) on how to set up the R environment on Windows.
-
 If you have access to a claims data set please also run this study on it, which is described in the "Run Study on Claims Data" section below
 
-Run Study 
-=========
-1. In `R`, use the following code to install the dependencies:
+How to run
+==========
+1. Follow [these instructions](https://ohdsi.github.io/Hades/rSetup.html) for seting up your R environment, including RTools and Java. 
+
+2. Open your study package in RStudio. Use the following code to install all the dependencies:
 
 	```r
-	install.packages("devtools")
-	library(devtools)
-	install_github("ohdsi/SqlRender", ref = "v1.6.0")
-	install_github("ohdsi/DatabaseConnector", ref = "v2.3.0")
-	install_github("ohdsi/OhdsiSharing", ref = "v0.1.3")
-	install_github("ohdsi/FeatureExtraction", ref = "v2.2.3")
-	install_github("ohdsi/CohortMethod", ref = "v3.0.2")
-	install_github("ohdsi/EmpiricalCalibration", ref = "v2.0.0")
-	install_github("ohdsi/MethodEvaluation", ref = "v1.0.2")
+	renv::restore()
 	```
 
-	If you experience problems on Windows where rJava can't find Java, one solution may be to add `"--no-multiarch"` to each `install_github` call, for example these are two ways to ignore the i386 architecture:
-	
-	```r
-	install_github("ohdsi/SqlRender", args = "--no-multiarch")
-	install_github("ohdsi/SqlRender", INSTALL_opts=c("--no-multiarch"))
-	```
-	
-	OR for all installs, one can try:
-	
-	```r
-	options(devtools.install.args = "--no-multiarch")
-	```
-	
-	Alternatively, ensure that you have installed both 32-bit and 64-bit JDK versions, as mentioned in the [video tutorial](https://youtu.be/K9_0s2Rchbo).
-	
-2. In `R`, use the following `devtools` command to install the IUDCLW package:
+3. In RStudio, select 'Build' then 'Install and Restart' to build the package.
 
-	```r
-	# install the network package
-    devtools::install_github("https://github.com/ohdsi-studies/IUDEHREstimationStudy")
-	```
-	
-3. Once installed, you can execute the study by modifying and using the code below. For your convenience, this code is also provided under `extras/CodeToRun.R`:
+4. Once installed, you can execute the study by modifying and using the code below. For your convenience, this code is also provided under `extras/CodeToRun.R`:
 
-	```r
-	library(IUDEHRStudy)
+   ```r
+   library(IUDEHRStudy)
+   # Optional: specify where the temporary files (used by the Andromeda package) will be created:
+   options(andromedaTempFolder = "c:/andromedaTemp")
 	
-	# Optional: specify where the temporary files (used by the ff package) will be created:
-	options(fftempdir = "c:/FFtemp")
-	
-	# Maximum number of cores to be used:
+   # Maximum number of cores to be used:
 	maxCores <- parallel::detectCores()
 	
-	# Minimum cell count when exporting data:
-	minCellCount <- 10
+   # Minimum cell count when exporting data:
+	minCellCount <- 5
 	
-	# The folder where the study intermediate and result files will be written:
+   # The folder where the study intermediate and result files will be written:
 	outputFolder <- "c:/IUDEHRStudy"
 	
-	# Details for connecting to the server:
-	# See ?DatabaseConnector::createConnectionDetails for help
-	connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "postgresql",
+   # Details for connecting to the server:
+   # See ?DatabaseConnector::createConnectionDetails for help
+   connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "postgresql",
 									server = "some.server.com/ohdsi",
-									user = "",
-									password = "")
+									user = "joe",
+									password = "secret")
 	
-	# The name of the database schema where the CDM data can be found:
-	cdmDatabaseSchema <- "cdm_synpuf"
+   # The name of the database schema where the CDM data can be found:
+   cdmDatabaseSchema <- "cdm_synpuf"
 	
-	# The name of the database schema and table where the study-specific cohorts will be instantiated:
-	cohortDatabaseSchema <- "scratch.dbo" #You mush have rights to create tables in this schema
-	cohortTable <- "iud_study_ehr"
+   # The name of the database schema and table where the study-specific cohorts will be instantiated:
+   cohortDatabaseSchema <- "scratch.dbo"
+   cohortTable <- "my_study_cohorts"
 	
-	# Some meta-information that will be used by the export function:
-	databaseId <- ""          #SiteName
-	databaseName <- ""        #SiteName_DatabaseName
-	databaseDescription <- "" #Description of site's database
+   # Some meta-information that will be used by the export function:
+   databaseId <- "Synpuf"
+   databaseName <- "Medicare Claims Synthetic Public Use Files (SynPUFs)"
+   databaseDescription <- "Medicare Claims Synthetic Public Use Files (SynPUFs) were created to allow interested parties to gain familiarity using Medicare claims data while protecting beneficiary privacy. These files are intended to promote development of software and applications that utilize files in this format, train researchers on the use and complexities of Centers for Medicare and Medicaid Services (CMS) claims, and support safe data mining innovations. The SynPUFs were created by combining randomized information from multiple unique beneficiaries and changing variable values. This randomization and combining of beneficiary information ensures privacy of health information."
 	
-	# For Oracle: define a schema that can be used to emulate temp tables:
-	oracleTempSchema <- NULL
+   # For Oracle: define a schema that can be used to emulate temp tables:
+   oracleTempSchema <- NULL
 	
-	execute(connectionDetails = connectionDetails,
+   execute(connectionDetails = connectionDetails,
             cdmDatabaseSchema = cdmDatabaseSchema,
             cohortDatabaseSchema = cohortDatabaseSchema,
             cohortTable = cohortTable,
@@ -124,31 +95,27 @@ Run Study
             maxCores = maxCores)
 	```
 
-4. To view the results, use the Shiny app:
+4. Upload the file ```export/Results_<DatabaseId>.zip``` in the output folder to the study coordinator:
 
 	```r
-	prepareForEvidenceExplorer(paste0("Results",databaseId,".zip"), "/shinyData")
-	launchEvidenceExplorer("/shinyData", blind = TRUE)
+	uploadResults(outputFolder, privateKeyFileName = "<file>", userName = "<name>")
 	```
 	
-	Note that you can save plots from within the Shiny app. It is possible to view results from more than one database by applying `prepareForEvidenceExplorer` to the Results file from each database, and using the same data folder. Set `blind = FALSE` if you wish to be unblinded to the final results.
-  
-5. Please contact both Matt Spotnitz (mes2165 at cumc dot columbia dot edu) and Karthik Natarajan (kn2174 at cumc dot columbia dot edu) for an account and key in order to upload the results. Once the account information is provided, the file ```export/Results<DatabaseId>.zip``` in the export folder can be uploaded to the study coordinator. Below is the R code to upload the files:
+	Where ```<file>``` and ```<name>``` are the credentials provided to you personally by the study coordinator.
+		
+5. To view the results, use the Shiny app:
 
 	```r
-    # one time R package install
-    install_github("ohdsi/OhdsiSharing")
- 
-    # upload local file to sftp server study folder using the '/tmp/privateKeyFileName' private key
-    privateKeyFileName <- ""                        #full path to the private key file that was provided by the study coordinator
-    userName <- ""                                  #username provided by study coordinator
-    fileName <- paste0("Results",databaseId,".zip") #results zip file
-    submitResults(outputFolder, fileName, userName, privateKeyFileName)
-    ```
+	prepareForEvidenceExplorer("Result_<databaseId>.zip", "/shinyData")
+	launchEvidenceExplorer("/shinyData", blind = TRUE)
+	```
+  
+  Note that you can save plots from within the Shiny app. It is possible to view results from more than one database by applying `prepareForEvidenceExplorer` to the Results file from each database, and using the same data folder. Set `blind = FALSE` if you wish to be unblinded to the final results.
 
 
-Run for Claims Data
-===================
+
+How to run for Claims Data
+==========================
 
 As mentioned above, if you have access to a claims data follow the below instructions to run an additional analysis.
 
@@ -157,7 +124,7 @@ devtools::install_github("https://github.com/ohdsi-studies/IUDEHREstimationStudy
 library(IUDClaimsStudy)
 
 # Optional: specify where the temporary files (used by the ff package) will be created:
-options(fftempdir = "c:/FFtemp")
+options(andromedaTempFolder = "c:/andromedaTemp")
 
 # Maximum number of cores to be used:
 maxCores <- parallel::detectCores()
