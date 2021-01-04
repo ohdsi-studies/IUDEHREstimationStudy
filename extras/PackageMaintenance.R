@@ -1,6 +1,6 @@
-# Copyright 2019 Observational Health Data Sciences and Informatics
+# Copyright 2020 Observational Health Data Sciences and Informatics
 #
-# This file is part of IUDCLW
+# This file is part of IUDEHRStudy
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 # Format and check code ---------------------------------------------------
 OhdsiRTools::formatRFolder()
-OhdsiRTools::checkUsagePackage("IUDCLW")
+OhdsiRTools::checkUsagePackage("IUDEHRStudy")
 OhdsiRTools::updateCopyrightYearFolder()
+devtools::spell_check()
 
 # Create manual -----------------------------------------------------------
-shell("rm extras/IUDCLW.pdf")
-shell("R CMD Rd2pdf ./ --output=extras/IUDCLW.pdf")
+unlink("extras/IUDEHRStudy.pdf")
+shell("R CMD Rd2pdf ./ --output=extras/IUDEHRStudy.pdf")
 
 # Create vignettes ---------------------------------------------------------
 rmarkdown::render("vignettes/UsingSkeletonPackage.Rmd",
@@ -37,12 +38,12 @@ rmarkdown::render("vignettes/DataModel.Rmd",
                                           number_sections = TRUE))
 
 # Insert cohort definitions from ATLAS into package -----------------------
-OhdsiRTools::insertCohortDefinitionSetInPackage(fileName = "CohortsToCreate.csv",
-                                                baseUrl = Sys.getenv("baseUrl"),
-                                                insertTableSql = TRUE,
-                                                insertCohortCreationR = TRUE,
-                                                generateStats = FALSE,
-                                                packageName = "IUDCLW")
+ROhdsiWebApi::insertCohortDefinitionSetInPackage(fileName = "CohortsToCreate.csv",
+                                                 baseUrl = Sys.getenv("baseUrl"),
+                                                 insertTableSql = TRUE,
+                                                 insertCohortCreationR = TRUE,
+                                                 generateStats = FALSE,
+                                                 packageName = "IUDEHRStudy")
 
 # Create analysis details -------------------------------------------------
 source("extras/CreateStudyAnalysisDetails.R")
@@ -50,4 +51,4 @@ createAnalysesDetails("inst/settings/")
 createPositiveControlSynthesisArgs("inst/settings/")
 
 # Store environment in which the study was executed -----------------------
-OhdsiRTools::insertEnvironmentSnapshotInPackage("IUDCLW")
+OhdsiRTools::createRenvLockFile("IUDEHRStudy")

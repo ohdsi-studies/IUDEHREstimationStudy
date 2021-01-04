@@ -1,61 +1,10 @@
 targetId,comparatorId,outcomeId,outcomeName,type
-1771647,1771648,4305080,Abnormal breathing,outcome
-1771647,1771648,138384,Acquired hypothyroidism,outcome
-1771647,1771648,137951,Acquired keratoderma,outcome
-1771647,1771648,194686,Acquired renal cystic disease,outcome
-1771647,1771648,138825,Actinic keratosis,outcome
-1771647,1771648,257004,Acute exacerbation of chronic obstructive airways disease,outcome
-1771647,1771648,199866,Acute gastritis,outcome
-1771647,1771648,436118,After-cataract with vision obscured,outcome
-1771647,1771648,381295,Age-related cataract,outcome
-1771647,1771648,433753,Alcohol abuse,outcome
-1771647,1771648,435243,Alcohol dependence,outcome
-1771647,1771648,439147,Amnesia,outcome
-1771647,1771648,200528,Ascites,outcome
-1771647,1771648,438409,Attention deficit hyperactivity disorder,outcome
-1771647,1771648,136057,Benign neoplasm of skin of trunk,outcome
-1771647,1771648,444367,Cholelithiasis without obstruction,outcome
-1771647,1771648,381292,Chronic allergic conjunctivitis,outcome
-1771647,1771648,432738,Chronic fatigue syndrome,outcome
-1771647,1771648,443597,Chronic kidney disease stage 3,outcome
-1771647,1771648,75860,Constipation,outcome
-1771647,1771648,4311591,Cramp in limb,outcome
-1771647,1771648,433163,Deficiency of macronutrients,outcome
-1771647,1771648,73575,Deformity of toe,outcome
-1771647,1771648,435796,Dehydration,outcome
-1771647,1771648,377910,Deviated nasal septum,outcome
-1771647,1771648,201061,Diaphragmatic hernia,outcome
-1771647,1771648,432730,Difficulty speaking,outcome
-1771647,1771648,74725,Displacement of cervical intervertebral disc without myelopathy,outcome
-1771647,1771648,433316,Dizziness and giddiness,outcome
-1771647,1771648,381877,Dysfunction of eustachian tube,outcome
-1771647,1771648,31317,Dysphagia,outcome
-1771647,1771648,433440,Dysthymia,outcome
-1771647,1771648,137351,Epidermoid cyst of skin,outcome
-1771647,1771648,197381,Epigastric pain,outcome
-1771647,1771648,30753,Esophagitis,outcome
-1771647,1771648,72715,Exostosis,outcome
-1771647,1771648,201418,"Flatulence, eructation and gas pain",outcome
-1771647,1771648,196456,Gallstone,outcome
-1771647,1771648,318800,Gastroesophageal reflux disease,outcome
-1771647,1771648,434613,Generalized anxiety disorder,outcome
-1771647,1771648,4168217,Generalized hyperhidrosis,outcome
-1771647,1771648,198400,Hemangioma of skin and subcutaneous tissue,outcome
-1771647,1771648,79864,Hematuria syndrome,outcome
-1771647,1771648,195562,Hemorrhoids,outcome
-1771647,1771648,433811,Hydronephrosis,outcome
-1771647,1771648,435511,Hypercalcemia,outcome
-1771647,1771648,434610,Hyperkalemia,outcome
-1771647,1771648,133729,Hyperparathyroidism,outcome
-1771647,1771648,4172432,Hyperpigmentation of skin,outcome
-1771647,1771648,141375,Hypertrophic condition of skin,outcome
 1771647,1771648,440129,Hypertrophy of nasal turbinates,outcome
 1771647,1771648,434004,Hypervolemia,outcome
 1771647,1771648,435510,Hypocalcemia,outcome
 1771647,1771648,437833,Hypokalemia,outcome
 1771647,1771648,4098604,Hypomagnesemia,outcome
 1771647,1771648,435515,Hypo-osmolality and or hyponatremia,outcome
-1771647,1771648,436375,Hypovolemia,outcome
 1771647,1771648,375806,Idiopathic peripheral neuropathy,outcome
 1771647,1771648,312950,IgE-mediated allergic asthma,outcome
 1771647,1771648,374375,Impacted cerumen,outcome
@@ -76,7 +25,7 @@ targetId,comparatorId,outcomeId,outcomeName,type
 1771647,1771648,434005,Morbid obesity,outcome
 1771647,1771648,379805,Myopia,outcome
 1771647,1771648,30234,Neck sprain,outcome
-1771647,1771648,376065,Neurological disorder with diabetes type 2,outcome
+1771647,1771648,376065,Neurological disorder with type 2 diabetes mellitus,outcome
 1771647,1771648,4209423,Nicotine dependence,outcome
 1771647,1771648,136661,Non-toxic nodular goiter,outcome
 1771647,1771648,437851,Open angle with borderline intraocular pressure,outcome
@@ -109,3 +58,52 @@ targetId,comparatorId,outcomeId,outcomeName,type
 1771647,1771648,437246,Vitamin B deficiency,outcome
 1771647,1771648,436070,Vitamin D deficiency,outcome
 1771647,1771648,316127,Vitreous opacities,outcome
+1771647,1771648,4305080,Abnormal breathing,outcome
+1771647,1771648,138384,Acquired hypothyroidism,outcome
+1771647,1771648,137951,Acquired keratoderma,outcome
+1771647,1771648,194686,Acquired renal cystic disease,outcome
+1771647,1771648,138825,Actinic keratosis,outcome
+1771647,1771648,257004,Acute exacerbation of chronic obstructive airways disease,outcome
+1771647,1771648,199866,Acute gastritis,outcome
+1771647,1771648,436118,After-cataract with vision obscured following extraction of cataract,outcome
+1771647,1771648,381295,Senile cataract,outcome
+1771647,1771648,433753,Alcohol abuse,outcome
+1771647,1771648,435243,Alcohol dependence,outcome
+1771647,1771648,439147,Amnesia,outcome
+1771647,1771648,200528,Ascites,outcome
+1771647,1771648,438409,Attention deficit hyperactivity disorder,outcome
+1771647,1771648,136057,Benign neoplasm of skin of trunk,outcome
+1771647,1771648,444367,Cholelithiasis without obstruction,outcome
+1771647,1771648,381292,Chronic allergic conjunctivitis,outcome
+1771647,1771648,432738,Chronic fatigue syndrome,outcome
+1771647,1771648,443597,Chronic kidney disease stage 3,outcome
+1771647,1771648,75860,Constipation,outcome
+1771647,1771648,4311591,Cramp in limb,outcome
+1771647,1771648,433163,Deficiency of macronutrients,outcome
+1771647,1771648,73575,Deformity of toe,outcome
+1771647,1771648,435796,Dehydration,outcome
+1771647,1771648,377910,Deviated nasal septum,outcome
+1771647,1771648,201061,Diaphragmatic hernia,outcome
+1771647,1771648,74725,Displacement of cervical intervertebral disc without myelopathy,outcome
+1771647,1771648,433316,Dizziness and giddiness,outcome
+1771647,1771648,381877,Dysfunction of eustachian tube,outcome
+1771647,1771648,31317,Dysphagia,outcome
+1771647,1771648,433440,Dysthymia,outcome
+1771647,1771648,137351,Epidermoid cyst of skin,outcome
+1771647,1771648,197381,Epigastric pain,outcome
+1771647,1771648,30753,Esophagitis,outcome
+1771647,1771648,72715,Exostosis,outcome
+1771647,1771648,201418,"Flatulence, eructation and gas pain",outcome
+1771647,1771648,196456,Gallstone,outcome
+1771647,1771648,318800,Gastroesophageal reflux disease,outcome
+1771647,1771648,434613,Generalized anxiety disorder,outcome
+1771647,1771648,4168217,Generalized hyperhidrosis,outcome
+1771647,1771648,198400,Hemangioma of skin and subcutaneous tissue,outcome
+1771647,1771648,79864,Hematuria syndrome,outcome
+1771647,1771648,195562,Hemorrhoids,outcome
+1771647,1771648,433811,Hydronephrosis,outcome
+1771647,1771648,435511,Hypercalcemia,outcome
+1771647,1771648,434610,Hyperkalemia,outcome
+1771647,1771648,133729,Hyperparathyroidism,outcome
+1771647,1771648,4172432,Hyperpigmentation of skin,outcome
+1771647,1771648,141375,Hypertrophic condition of skin,outcome

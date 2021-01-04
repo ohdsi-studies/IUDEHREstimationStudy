@@ -1,4 +1,4 @@
-# Copyright 2019 Observational Health Data Sciences and Informatics
+# Copyright 2020 Observational Health Data Sciences and Informatics
 #
 # This file is part of IUDClaimsStudy
 # 
@@ -57,7 +57,7 @@ prepareForEvidenceExplorer <- function(resultsZipFile, dataFolder) {
   
   processFile <- function(file) {
     tableName <- gsub(".csv$", "", file)
-    table <- read.csv(file.path(tempFolder, file))
+    table <- readr::read_csv(file.path(tempFolder, file), col_types = readr::cols())
     if (tableName %in% splittableTables) {
       subsets <- split(table, list(table$target_id, table$comparator_id))
       plyr::l_ply(subsets, processSubet, tableName = tableName)

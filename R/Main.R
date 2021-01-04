@@ -20,7 +20,7 @@
 #' This function executes the IUDEHRS Study.
 #' 
 #' The \code{createCohorts}, \code{synthesizePositiveControls}, \code{runAnalyses}, and \code{runDiagnostics} arguments
-#' are intended to be used to run parts of the full study at a time, but none of the parts are considerd to be optional.
+#' are intended to be used to run parts of the full study at a time, but none of the parts are considered to be optional.
 #'
 #' @param connectionDetails    An object of type \code{connectionDetails} as created using the
 #'                             \code{\link[DatabaseConnector]{createConnectionDetails}} function in the
@@ -89,13 +89,12 @@ execute <- function(connectionDetails,
                     minCellCount= 5) {
   if (!file.exists(outputFolder))
     dir.create(outputFolder, recursive = TRUE)
-  if (!is.null(getOption("fftempdir")) && !file.exists(getOption("fftempdir"))) {
-    warning("fftempdir '", getOption("fftempdir"), "' not found. Attempting to create folder")
-    dir.create(getOption("fftempdir"), recursive = TRUE)
-  }
-  
+
   ParallelLogger::addDefaultFileLogger(file.path(outputFolder, "log.txt"))
-  
+  ParallelLogger::addDefaultErrorReportLogger(file.path(outputFolder, "errorReportR.txt"))
+  on.exit(ParallelLogger::unregisterLogger("DEFAULT_FILE_LOGGER", silent = TRUE))
+  on.exit(ParallelLogger::unregisterLogger("DEFAULT_ERRORREPORT_LOGGER", silent = TRUE), add = TRUE)
+
   if (createCohorts) {
     ParallelLogger::logInfo("Creating exposure and outcome cohorts")
     createCohorts(connectionDetails = connectionDetails,

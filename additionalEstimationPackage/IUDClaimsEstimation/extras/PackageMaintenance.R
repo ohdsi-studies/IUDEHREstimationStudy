@@ -1,4 +1,4 @@
-# Copyright 2019 Observational Health Data Sciences and Informatics
+# Copyright 2020 Observational Health Data Sciences and Informatics
 #
 # This file is part of IUDClaimsStudy
 #
@@ -18,9 +18,10 @@
 OhdsiRTools::formatRFolder()
 OhdsiRTools::checkUsagePackage("IUDClaimsStudy")
 OhdsiRTools::updateCopyrightYearFolder()
+devtools::spell_check()
 
 # Create manual -----------------------------------------------------------
-shell("rm extras/IUDClaimsStudy.pdf")
+unlink("extras/IUDClaimsStudy.pdf")
 shell("R CMD Rd2pdf ./ --output=extras/IUDClaimsStudy.pdf")
 
 # Create vignettes ---------------------------------------------------------
@@ -37,12 +38,12 @@ rmarkdown::render("vignettes/DataModel.Rmd",
                                           number_sections = TRUE))
 
 # Insert cohort definitions from ATLAS into package -----------------------
-OhdsiRTools::insertCohortDefinitionSetInPackage(fileName = "CohortsToCreate.csv",
-                                                baseUrl = Sys.getenv("baseUrl"),
-                                                insertTableSql = TRUE,
-                                                insertCohortCreationR = TRUE,
-                                                generateStats = FALSE,
-                                                packageName = "IUDClaimsStudy")
+ROhdsiWebApi::insertCohortDefinitionSetInPackage(fileName = "CohortsToCreate.csv",
+                                                 baseUrl = Sys.getenv("baseUrl"),
+                                                 insertTableSql = TRUE,
+                                                 insertCohortCreationR = TRUE,
+                                                 generateStats = FALSE,
+                                                 packageName = "IUDClaimsStudy")
 
 # Create analysis details -------------------------------------------------
 source("extras/CreateStudyAnalysisDetails.R")
@@ -50,4 +51,4 @@ createAnalysesDetails("inst/settings/")
 createPositiveControlSynthesisArgs("inst/settings/")
 
 # Store environment in which the study was executed -----------------------
-OhdsiRTools::insertEnvironmentSnapshotInPackage("IUDClaimsStudy")
+OhdsiRTools::createRenvLockFile("IUDClaimsStudy")
