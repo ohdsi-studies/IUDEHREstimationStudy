@@ -81,12 +81,15 @@ execute <- function(connectionDetails,
                     databaseName = "Unknown",
                     databaseDescription = "Unknown",
                     createCohorts = TRUE,
+                    reloadData = TRUE,
                     synthesizePositiveControls = TRUE,
                     runAnalyses = TRUE,
                     runDiagnostics = TRUE,
                     packageResults = TRUE,
                     maxCores = 4,
-                    minCellCount= 5) {
+                    minCellCount = 5) {
+
+  package <- "IUDEHRStudy"
   if (!file.exists(outputFolder))
     dir.create(outputFolder, recursive = TRUE)
 
@@ -94,6 +97,8 @@ execute <- function(connectionDetails,
   ParallelLogger::addDefaultErrorReportLogger(file.path(outputFolder, "errorReportR.txt"))
   on.exit(ParallelLogger::unregisterLogger("DEFAULT_FILE_LOGGER", silent = TRUE))
   on.exit(ParallelLogger::unregisterLogger("DEFAULT_ERRORREPORT_LOGGER", silent = TRUE), add = TRUE)
+
+  initializeStudy(outputFolder, connectionDetails, cohortDatabaseSchema, oracleTempSchema, package, reloadData)
 
   if (createCohorts) {
     ParallelLogger::logInfo("Creating exposure and outcome cohorts")
@@ -104,7 +109,7 @@ execute <- function(connectionDetails,
                   oracleTempSchema = oracleTempSchema,
                   outputFolder = outputFolder)
   }
-  
+
   # Set doPositiveControlSynthesis to FALSE if you don't want to use synthetic positive controls:
   doPositiveControlSynthesis = FALSE
   if (doPositiveControlSynthesis) {
@@ -121,7 +126,7 @@ execute <- function(connectionDetails,
   }
 
   cohortCountsFile <- file.path(outputFolder, "CohortCounts.csv")
-  if(!file.exists(cohortCountsFile)) {
+  if (!file.exists(cohortCountsFile)) {
     ParallelLogger::logInfo(paste("CohortCounts file not found. File: ", cohortCountsFile))
   } else {
 
@@ -141,8 +146,8 @@ execute <- function(connectionDetails,
 
     #Continue study if T and O cohorts have a large enough cohort count
     if (validCohort(1771648, cohortCounts, minCellCount) &&
-        validCohort(1771647, cohortCounts, minCellCount) &&
-        validCohort(1771054, cohortCounts, minCellCount)) {
+      validCohort(1771647, cohortCounts, minCellCount) &&
+      validCohort(1771054, cohortCounts, minCellCount)) {
       if (runAnalyses) {
         ParallelLogger::logInfo("Running CohortMethod analyses")
         runCohortMethod(connectionDetails = connectionDetails,
@@ -155,15 +160,15 @@ execute <- function(connectionDetails,
 
         for (i in 1:nrow(cohortsToCreate)) {
 
-              ParallelLogger::logInfo(paste("Running Cohort Characterization for", cohortsToCreate$name[i]))
-              runCohortCharacterization(connectionDetails,
-                                        cdmDatabaseSchema,
-                                        cohortDatabaseSchema,
-                                        cohortTable,
-                                        oracleTempSchema,
-                                        cohortsToCreate$cohortId[i],
-                                        outputFolder, cohortsToCreate,
-                                        cohortCounts, minCellCount)
+          ParallelLogger::logInfo(paste("Running Cohort Characterization for", cohortsToCreate$name[i]))
+          runCohortCharacterization(connectionDetails,
+                                    cdmDatabaseSchema,
+                                    cohortDatabaseSchema,
+                                    cohortTable,
+                                    oracleTempSchema,
+                                    cohortsToCreate$cohortId[i],
+                                    outputFolder, cohortsToCreate,
+                                    cohortCounts, minCellCount)
         }
 
         ParallelLogger::logInfo("Calculating cumulative incidence for Cu...")
@@ -226,7 +231,60 @@ execute <- function(connectionDetails,
 
 validCohort <- function(cohortId, cohortCounts, minCellCount) {
 
-    index <- grep(cohortId, cohortCounts$cohortDefinitionId)
-    return(length(index)!=0 && cohortCounts$personCount[index] > minCellCount)
+  index <- grep(cohortId, cohortCounts$cohortDefinitionId)
+  return(length(index) != 0 && cohortCounts$personCount[index] > minCellCount)
 
 }
+
+initializeStudy <- function(outputFolder, connectionDetails, cohortDatabaseSchema, oracleTempSchema, package, reloadData = TRUE) {
+  if (!file.exists(outputFolder))
+    dir.create(outputFolder, recursive = TRUE)
+  ParallelLogger::addDefaultFileLogger(file.path(outputFolder, "log.txt"))
+  ParallelLogger::addDefaultErrorReportLogger(file.path(outputFolder, "errorReportR.txt"))
+
+  if (reloadData) {
+    #load CVX Groupings
+    ParallelLogger::logInfo("Loading CVX Groupings")
+    pathToCsv <- system.file("settings", "CvxGroups.txt", package = package)
+    createAndLoadFileToTable(pathToCsv, sep = "|", connectionDetails, cohortDatabaseSchema, createTableFile = "CreateCVXGroupsTable.sql", tableName = "cvx_groups", oracleTempSchema, package)
+
+    #load CVX to NDC Crosswalk
+    ParallelLogger::logInfo("Loading CVX to NDC Crosswalk")
+    pathToCsv <- system.file("settings", "CVXtoNDCCrosswalk.txt", package = package)
+    createAndLoadFileToTable(pathToCsv, sep = "|", connectionDetails, cohortDatabaseSchema, createTableFile = "CreateCVXtoNDCTable.sql", tableName = "cvx_to_ndc_crosswalk", oracleTempSchema, package)
+  }
+}
+
+createAndLoadFileToTable <- function(pathToCsv, sep = ",", connectionDetails, cohortDatabaseSchema, createTableFile, tableName, oracleTempSchema, package) {
+  #Create table to load data
+  connection <- DatabaseConnector::connect(connectionDetails)
+  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = createTableFile,
+                                           packageName = package,
+                                           dbms = attr(connection, "dbms"),
+                                           tempEmulationSchema = oracleTempSchema,
+                                           target_database_schema = cohortDatabaseSchema,
+                                           table_name = tableName)
+  DatabaseConnector::executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
+
+
+  #Load data from csv file
+  data <- read.csv(file = pathToCsv, sep = sep)
+  #Construct the values to insert
+  # paste0(apply(head(data), 1, function(x) paste0("('", paste0(x, collapse = "', '"), "')")), collapse = ", ")
+  #batch load the rows
+  chunk <- 1000
+  n <- nrow(data)
+  r <- rep(1:ceiling(n / chunk), each = chunk)[1:n]
+  d <- split(data, r)
+
+  for (i in d) {
+    # values <- paste0("(", apply(apply(i, 1, function(x) ifelse(is.na(strtoi(x)), paste0("'", x,"'"), paste0(x))), 2, function(x) paste(x, collapse = ", ")), ")", collapse=",")
+    values <-   paste0(apply(head(data), 1, function(x) paste0("('", paste0(x, collapse = "', '"), "')")), collapse = ", ")
+    sql <- paste0("INSERT INTO @target_database_schema.@table_name VALUES ", values, ";")
+    renderedSql <- SqlRender::render(sql = sql, target_database_schema = cohortDatabaseSchema, table_name = tableName)
+    insertSql <- SqlRender::translate(renderedSql, targetDialect = attr(connection, "dbms"))
+    DatabaseConnector::executeSql(connection, insertSql)
+  }
+  disconnect(connection)
+}
+
