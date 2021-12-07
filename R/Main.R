@@ -279,7 +279,7 @@ createAndLoadFileToTable <- function(pathToCsv, sep = ",", connectionDetails, co
 
   for (i in d) {
     # values <- paste0("(", apply(apply(i, 1, function(x) ifelse(is.na(strtoi(x)), paste0("'", x,"'"), paste0(x))), 2, function(x) paste(x, collapse = ", ")), ")", collapse=",")
-    values <-   paste0(apply(head(data), 1, function(x) paste0("('", paste0(x, collapse = "', '"), "')")), collapse = ", ")
+    values <-   paste0(apply(data, 1, function(x) paste0("('", paste0(x, collapse = "', '"), "')")), collapse = ", ")
     sql <- paste0("INSERT INTO @target_database_schema.@table_name VALUES ", values, ";")
     renderedSql <- SqlRender::render(sql = sql, target_database_schema = cohortDatabaseSchema, table_name = tableName)
     insertSql <- SqlRender::translate(renderedSql, targetDialect = attr(connection, "dbms"))
