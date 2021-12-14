@@ -1,4 +1,4 @@
-Short Description|CVX Code|Vaccine Status|Vaccine Group Name|CVX for Vaccine Group
+short_description|cvx_code|vaccine_status|vaccine_group_name|cvx_for_vaccine_group
 DTP|01|Inactive|DTAP|107
 OPV|02|Inactive|POLIO|89
 MMR|03|Active|MMR|03
