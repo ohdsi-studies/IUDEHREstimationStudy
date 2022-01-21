@@ -55,6 +55,24 @@ runCohortMethod <- function(connectionDetails,
                                     "cmAnalysisList.json",
                                     package = "IUDEHRStudy")
   cmAnalysisList <- CohortMethod::loadCmAnalysisList(cmAnalysisListFile)
+  # create the vaccine covariate settings
+  vaccineCovariateSettings <- createVaccineCovariateSettings(lookbackDays = 3650)
+
+  for (analysis in cmAnalysisList) {
+    # combine both covariate settings into a list
+    covariateSettingsList <- list(analysis$getDbCohortMethodDataArgs$covariateSettings, vaccineCovariateSettings)
+    analysis$getDbCohortMethodDataArgs$covariateSettings <- covariateSettingsList
+    # run feature extraction as normal
+# run feature extraction as normal
+# covariates <- getDbCovariateData(connectionDetails = connectionDetails,
+#                                  cdmDatabaseSchema = cdmDatabaseSchema,
+#                                  cohortDatabaseSchema = cohortDatabaseSchema,
+#                                  cohortTable = "iudstudy",
+#                                  cohortId = 1771648, # The cohort to extract features for
+#                                  covariateSettings = covariateSettingsList)
+  }
+
+
   tcosList <- createTcos(outputFolder = outputFolder)
   outcomesOfInterest <- getOutcomesOfInterest()
   results <- CohortMethod::runCmAnalyses(connectionDetails = connectionDetails,

@@ -15,8 +15,10 @@ execute(
   databaseName = "Unknown",
   databaseDescription = "Unknown",
   createCohorts = TRUE,
+  reloadData = TRUE,
   synthesizePositiveControls = TRUE,
   runAnalyses = TRUE,
+  runDiagnostics = TRUE,
   packageResults = TRUE,
   maxCores = 4,
   minCellCount = 5
@@ -60,6 +62,8 @@ Synthetic Public Use Files (SynPUFs)').}
 
 \item{runAnalyses}{Perform the cohort method analyses?}
 
+\item{runDiagnostics}{Compute study diagnostics?}
+
 \item{packageResults}{Should results be packaged for later sharing?}
 
 \item{maxCores}{How many parallel cores should be used? If more cores are made available
@@ -72,7 +76,7 @@ in packaged results.}
 Execute the Study
 }
 \details{
-This function executes the IUDEHRStudy Study.
+This function executes the IUDEHRS Study.
 
 The \code{createCohorts}, \code{synthesizePositiveControls}, \code{runAnalyses}, and \code{runDiagnostics} arguments
 are intended to be used to run parts of the full study at a time, but none of the parts are considered to be optional.

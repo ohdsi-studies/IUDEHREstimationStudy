@@ -248,10 +248,6 @@ initializeStudy <- function(outputFolder, connectionDetails, cohortDatabaseSchem
     pathToCsv <- system.file("settings", "CvxGroups.txt", package = package)
     createAndLoadFileToTable(pathToCsv, sep = "|", connectionDetails, cohortDatabaseSchema, createTableFile = "CreateCVXGroupsTable.sql", tableName = "cvx_groups", oracleTempSchema, package)
 
-    #load CVX to NDC Crosswalk
-    ParallelLogger::logInfo("Loading CVX to NDC Crosswalk")
-    pathToCsv <- system.file("settings", "CVXtoNDCCrosswalk.txt", package = package)
-    createAndLoadFileToTable(pathToCsv, sep = "|", connectionDetails, cohortDatabaseSchema, createTableFile = "CreateCVXtoNDCTable.sql", tableName = "cvx_to_ndc_crosswalk", oracleTempSchema, package)
   }
 }
 
