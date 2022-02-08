@@ -56,7 +56,7 @@ runCohortMethod <- function(connectionDetails,
                                     package = "IUDEHRStudy")
   cmAnalysisList <- CohortMethod::loadCmAnalysisList(cmAnalysisListFile)
   # create the vaccine covariate settings
-  vaccineCovariateSettings <- createVaccineCovariateSettings(lookbackDays = 3650)
+  vaccineCovariateSettings <- createVaccineCovariateSettings(lookbackDays = 3650, cohortTable = cohortTable)
 
   for (analysis in cmAnalysisList) {
     # combine both covariate settings into a list

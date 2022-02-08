@@ -3,8 +3,8 @@
 # Two functions required for the vaccine custom covariate builder
 # These can be put in a separate R script and sourced before running feature extraction
 
-createVaccineCovariateSettings <- function(lookbackDays = 180) {
-  covariateSettings <- list(lookbackDays = lookbackDays)
+createVaccineCovariateSettings <- function(lookbackDays = 180, cohortTable = "cohort_person") {
+  covariateSettings <- list(lookbackDays = lookbackDays, cohortTable = cohortTable)
   attr(covariateSettings, "fun") <- "getDbVaccineCovariateData"
   class(covariateSettings) <- "covariateSettings"
   return(covariateSettings)
