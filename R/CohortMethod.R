@@ -58,10 +58,12 @@ runCohortMethod <- function(connectionDetails,
   # create the vaccine covariate settings
   vaccineCovariateSettings <- createVaccineCovariateSettings(lookbackDays = 3650, cohortTable = cohortTable)
 
-  for (analysis in cmAnalysisList) {
+  # for (analysis in cmAnalysisList) {
+  for (i in 1:length(cmAnalysisList)) {
     # combine both covariate settings into a list
-    covariateSettingsList <- list(analysis$getDbCohortMethodDataArgs$covariateSettings, vaccineCovariateSettings)
-    analysis$getDbCohortMethodDataArgs$covariateSettings <- covariateSettingsList
+    cmAnalysisList[[i]]$getDbCohortMethodDataArgs$covariateSettings <- list(cmAnalysisList[[i]]$getDbCohortMethodDataArgs$covariateSettings, vaccineCovariateSettings)
+    # covariateSettingsList <- list(analysis$getDbCohortMethodDataArgs$covariateSettings, vaccineCovariateSettings)
+    # analysis$getDbCohortMethodDataArgs$covariateSettings <- covariateSettingsList
     # run feature extraction as normal
 # run feature extraction as normal
 # covariates <- getDbCovariateData(connectionDetails = connectionDetails,

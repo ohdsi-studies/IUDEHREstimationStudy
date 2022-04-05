@@ -2,15 +2,18 @@
 # file: vaccineCovariateBuilder.R
 # Two functions required for the vaccine custom covariate builder
 # These can be put in a separate R script and sourced before running feature extraction
-
-createVaccineCovariateSettings <- function(lookbackDays = 180, cohortTable = "cohort_person") {
-  covariateSettings <- list(lookbackDays = lookbackDays, cohortTable = cohortTable)
+#' @export
+createVaccineCovariateSettings <- function(lookbackDays = 180, cohortTable = "cohort_person", analysisId = 555) {
+  if (lookbackDays < 1){
+    stop('lookbackDays must be >= 1')
+  }
+  covariateSettings <- list(lookbackDays = lookbackDays, cohortTable = cohortTable, analysisId = analysisId)
   attr(covariateSettings, "fun") <- "getDbVaccineCovariateData"
   class(covariateSettings) <- "covariateSettings"
   return(covariateSettings)
 }
 
-
+#' @export
 getDbVaccineCovariateData <- function(connection,
                                       oracleTempSchema = NULL,
                                       cdmDatabaseSchema,
@@ -23,7 +26,6 @@ getDbVaccineCovariateData <- function(connection,
                                       aggregated = FALSE) {
 
   writeLines("Constructing Vaccine covariates using CVX Groups")
-  if (covariateSettings$lookbackDays < 1) return(NULL)
   if (rowIdField != "subject_id") stop("Only subject_id as rowId is supported.")
   if (aggregated)  aggregated <- FALSE #stop("Aggregation not supported")
 
@@ -70,12 +72,14 @@ getDbVaccineCovariateData <- function(connection,
     message("No persons in the cohort with vaccine covariates.")
   }
 
-  sqlResult$analysisId <- 10000
-  covariates <- sqlResult[, c("rowId", "covariateId", "covariateValue")]
-  covariateRef <- sqlResult[, c("covariateId", "covariateName", "analysisId", "conceptId")]
+  #sqlResult$analysisId <- 555
+  
+  #ToDo: 
+  covariates <- unique(sqlResult[, c("rowId", "covariateId", "covariateValue")])
+  covariateRef <- unique(sqlResult[, c("covariateId", "covariateName", "conceptId")])
 
   # Construct analysis reference:
-  analysisRef <- data.frame(analysisId = 10000,
+  analysisRef <- data.frame(analysisId = covariateSettings$analysisId,
                             analysisName = "CVX Vaccine Covariates",
                             domainId = "Drug",
                             startDay = 0, #-covariateSettings$lookbackDays,
@@ -125,7 +129,7 @@ getDbVaccineCovariateData <- function(connection,
 # covariates$covariates %>%
 #   left_join(covariates$covariateRef) %>%
 #   left_join(covariates$analysisRef) %>%
-#   filter(analysisId == 1000) %>%
+#   filter(analysisId == 555) %>%
 #   head(10) %>%
 #   collect()
 

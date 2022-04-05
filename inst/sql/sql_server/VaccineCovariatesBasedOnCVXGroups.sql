@@ -1,5 +1,6 @@
 {DEFAULT @cvx_group_table_name = "cvx_groups"}
 {DEFAULT @row_id_field = "subject_id"}
+{DEFAULT @analysis_id = "555"}
 
 -- Feature construction
 with rxnorm_to_cvx as (
@@ -11,7 +12,7 @@ with rxnorm_to_cvx as (
     JOIN @vocabulary_database_schema.concept as c2              ON cr.concept_id_2 = c2.concept_id
 )
 SELECT @row_id_field AS row_id,
-       CAST(cvx.vaccine_group_code AS BIGINT) * 10000 AS covariate_id,
+       CAST(cvx.vaccine_group_code AS BIGINT) * 1000 + @analysis_id  AS covariate_id,
        1 AS covariate_value,  -- Should this be the number of days before index date or a binary value
        CAST(CONCAT('CVX group any time prior to index: ', CASE WHEN cvx.vaccine_group_name IS NULL THEN 'Unknown CVX Group' ELSE cvx.vaccine_group_name END) AS VARCHAR(512)) AS covariate_name,
        c2.concept_id --as cvx_group_concept_id
@@ -26,7 +27,7 @@ WHERE de.drug_exposure_start_date <= ch.cohort_start_date --DATEDIFF(DAY, de.dru
 UNION
 
 SELECT @row_id_field AS row_id,
-       CAST(cvx.vaccine_group_code AS BIGINT) * 10000 AS covariate_id,
+       CAST(cvx.vaccine_group_code AS BIGINT) * 1000 + @analysis_id  AS covariate_id,
        1 AS covariate_value,   -- Should this be the number of days before index date or a binary value
        CAST(CONCAT('CVX group any time prior to index: ', CASE WHEN cvx.vaccine_group_name IS NULL THEN 'Unknown CVX Group' ELSE cvx.vaccine_group_name END) AS VARCHAR(512)) AS covariate_name,
        c2.concept_id --as cvx_group_concept_id
