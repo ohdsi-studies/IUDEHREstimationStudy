@@ -3,55 +3,34 @@
 # Two functions required for the vaccine custom covariate builder
 # These can be put in a separate R script and sourced before running feature extraction
 #' @export
-createVaccineCovariateSettings <- function(lookbackDays = 180, cohortTable = "cohort_person", analysisId = 555) {
+createVaccineCovariateSettings <- function(lookbackDays = 180, cohortTable = "cohort_person", analysisId = 555, cohortDatabaseSchema) {
   if (lookbackDays < 1){
     stop('lookbackDays must be >= 1')
   }
-  covariateSettings <- list(lookbackDays = lookbackDays, cohortTable = cohortTable, analysisId = analysisId)
-  attr(covariateSettings, "fun") <- "getDbVaccineCovariateData"
+  covariateSettings <- list(lookbackDays = lookbackDays, cohortTable = cohortTable, analysisId = analysisId, cohortDatabaseSchema = cohortDatabaseSchema)
+  attr(covariateSettings, "fun") <- "IUDEHRStudy::getDbVaccineCovariateData"
   class(covariateSettings) <- "covariateSettings"
   return(covariateSettings)
 }
 
 #' @export
 getDbVaccineCovariateData <- function(connection,
-                                      oracleTempSchema = NULL,
                                       cdmDatabaseSchema,
+                                      oracleTempSchema = NULL,
                                       cohortTable = "cohort_person",
                                       cohortId = -1,
                                       cdmVersion = "5",
-                                     # cohortDatabaseSchema,
                                       rowIdField = "subject_id",
                                       covariateSettings,
                                       aggregated = FALSE) {
 
-  writeLines("Constructing Vaccine covariates using CVX Groups")
-  if (rowIdField != "subject_id") stop("Only subject_id as rowId is supported.")
+  #writeLines("Constructing Vaccine covariates using CVX Groups")
+  ParallelLogger::logInfo(paste0("*** Constructing Vaccine covariates using CVX Groups for ", cohortId, " ***"))
+  #if (rowIdField != "subject_id") stop(paste0("Only subject_id as rowId is supported. This value was used ", rowIdField))
   if (aggregated)  aggregated <- FALSE #stop("Aggregation not supported")
 
-  # Some SQL to construct the covariate:
-  # sql <- paste("SELECT ch.subject_id AS row_id",
-  #              ",de.drug_concept_id AS covariate_id",
-  #              ",1 AS covariate_value",
-  #              ",de.drug_concept_id AS concept_id",
-  #              ",c.concept_name AS covariate_name",
-  #              "FROM @cohort_table ch",
-  #              "INNER JOIN @cdm_database_schema.drug_exposure de",
-  #              "ON de.person_id = ch.subject_id",
-  #              "INNER JOIN @cdm_database_schema.concept c",
-  #              "ON de.drug_concept_id = c.concept_id",
-  #              "WHERE c.vocabulary_id = 'CVX'",
-  #              "AND DATEDIFF(DAY, de.drug_exposure_start_date, ch.cohort_start_date) <= @lookback_days",
-  #              "{@cohort_id != -1} ? {AND cohort_definition_id = @cohort_id}")
-  # sql <- SqlRender::render(sql,
-  #                          cohort_table = cohortTable,
-  #                          cohort_id = cohortId,
-  #                          cdm_database_schema = cdmDatabaseSchema,
-  #                          lookback_days = covariateSettings$lookbackDays)
-  # sql <- SqlRender::translate(sql, targetDialect = attr(connection, "dbms"))
-
   sqlFile <- "VaccineCovariatesBasedOnCVXGroups.sql"
-
+  cohortDatabaseSchema <- covariateSettings$cohortDatabaseSchema
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = sqlFile,
                                            packageName = "IUDEHRStudy",
                                            dbms = attr(connection, "dbms"),
@@ -61,8 +40,7 @@ getDbVaccineCovariateData <- function(connection,
                                            target_database_schema = cohortDatabaseSchema,
                                            cvx_group_table_name = "cvx_groups",
                                            cohort_table = cohortTable,
-                                           cohort_id = cohortId,
-                                           row_id_field = rowIdField)
+                                           cohort_id = cohortId)
 
   # Retrieve the covariate:
   # sqlResult <- DatabaseConnector::executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
