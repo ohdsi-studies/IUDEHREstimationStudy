@@ -7,6 +7,7 @@ createVaccineCovariateSettings <- function(lookbackDays = 180, cohortTable = "co
   if (lookbackDays < 1){
     stop('lookbackDays must be >= 1')
   }
+  ParallelLogger::logInfo(paste0("*** In createVaccineCovariateSettings for cohortTable ", cohortTable, " ***"))
   covariateSettings <- list(lookbackDays = lookbackDays, cohortTable = cohortTable, analysisId = analysisId, cohortDatabaseSchema = cohortDatabaseSchema)
   attr(covariateSettings, "fun") <- "IUDEHRStudy::getDbVaccineCovariateData"
   class(covariateSettings) <- "covariateSettings"
@@ -24,7 +25,7 @@ getDbVaccineCovariateData <- function(connection,
                                       covariateSettings,
                                       aggregated = FALSE) {
 
-  #writeLines("Constructing Vaccine covariates using CVX Groups")
+  writeLines("Constructing Vaccine covariates using CVX Groups")
   ParallelLogger::logInfo(paste0("*** Constructing Vaccine covariates using CVX Groups for ", cohortId, " ***"))
   #if (rowIdField != "subject_id") stop(paste0("Only subject_id as rowId is supported. This value was used ", rowIdField))
   if (aggregated)  aggregated <- FALSE #stop("Aggregation not supported")

@@ -10,7 +10,8 @@ with rxnorm_to_cvx as (
                                                                    cr.relationship_id = 'RxNorm - CVX' --RxNorm mapping
     JOIN @vocabulary_database_schema.concept as c2              ON cr.concept_id_2 = c2.concept_id
 )
-SELECT ch.subject_id AS row_id,
+SELECT --ch.subject_id AS 
+       row_id,
        CAST(cvx.vaccine_group_code AS BIGINT) * 1000 + @analysis_id  AS covariate_id,
        1 AS covariate_value,  -- Should this be the number of days before index date or a binary value
        CAST(CONCAT('CVX group any time prior to index: ', CASE WHEN cvx.vaccine_group_name IS NULL THEN 'Unknown CVX Group' ELSE cvx.vaccine_group_name END) AS VARCHAR(512)) AS covariate_name,
@@ -25,7 +26,8 @@ WHERE de.drug_exposure_start_date <= ch.cohort_start_date --DATEDIFF(DAY, de.dru
 
 UNION
 
-SELECT ch.subject_id AS row_id,
+SELECT --ch.subject_id AS 
+       row_id,
        CAST(cvx.vaccine_group_code AS BIGINT) * 1000 + @analysis_id  AS covariate_id,
        1 AS covariate_value,   -- Should this be the number of days before index date or a binary value
        CAST(CONCAT('CVX group any time prior to index: ', CASE WHEN cvx.vaccine_group_name IS NULL THEN 'Unknown CVX Group' ELSE cvx.vaccine_group_name END) AS VARCHAR(512)) AS covariate_name,
