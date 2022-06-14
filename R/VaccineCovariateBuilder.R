@@ -32,6 +32,8 @@ getDbVaccineCovariateData <- function(connection,
 
   sqlFile <- "VaccineCovariatesBasedOnCVXGroups.sql"
   cohortDatabaseSchema <- covariateSettings$cohortDatabaseSchema
+  
+  
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = sqlFile,
                                            packageName = "IUDEHRStudy",
                                            dbms = attr(connection, "dbms"),
@@ -40,6 +42,7 @@ getDbVaccineCovariateData <- function(connection,
                                            vocabulary_database_schema = cdmDatabaseSchema,
                                            target_database_schema = cohortDatabaseSchema,
                                            cvx_group_table_name = "cvx_groups",
+                                          # analysis_id = covariateSettings$analysisId,
                                            cohort_table = cohortTable,
                                            cohort_id = cohortId)
 
@@ -51,11 +54,12 @@ getDbVaccineCovariateData <- function(connection,
     message("No persons in the cohort with vaccine covariates.")
   }
 
-  #sqlResult$analysisId <- 555
   
   #ToDo: 
   covariates <- unique(sqlResult[, c("rowId", "covariateId", "covariateValue")])
-  covariateRef <- unique(sqlResult[, c("covariateId", "covariateName", "conceptId")])
+  covariateRef <- unique(sqlResult[, c("covariateId", "covariateName", "analysisId")]) #, "conceptId")])
+  covariateRef$analysisId <- 555#covariateSettings$analysisId
+  
 
   # Construct analysis reference:
   analysisRef <- data.frame(analysisId = covariateSettings$analysisId,
