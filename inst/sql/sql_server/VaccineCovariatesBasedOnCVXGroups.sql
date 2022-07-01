@@ -16,7 +16,7 @@ SELECT --ch.subject_id AS
        1 AS covariate_value,  -- Should this be the number of days before index date or a binary value
        CAST(CONCAT('CVX group any time prior to index: ', CASE WHEN cvx.vaccine_group_name IS NULL THEN 'Unknown CVX Group' ELSE cvx.vaccine_group_name END) AS VARCHAR(512)) AS covariate_name,
        c2.concept_id --as cvx_group_concept_id
-      -- ,@analysis_id as analysis_id
+       ,@analysis_id as analysis_id
 FROM @cohort_table as ch
 JOIN @cdm_database_schema.drug_exposure as de             ON de.person_id = ch.subject_id
 JOIN rxnorm_to_cvx rc                                     ON de.drug_concept_id = rc.rx_norm_concept_id
@@ -33,7 +33,7 @@ SELECT --ch.subject_id AS
        1 AS covariate_value,   -- Should this be the number of days before index date or a binary value
        CAST(CONCAT('CVX group any time prior to index: ', CASE WHEN cvx.vaccine_group_name IS NULL THEN 'Unknown CVX Group' ELSE cvx.vaccine_group_name END) AS VARCHAR(512)) AS covariate_name,
        c2.concept_id --as cvx_group_concept_id
-     --  ,@analysis_id as analysis_id
+       ,@analysis_id as analysis_id
 FROM @cohort_table as ch
 JOIN @cdm_database_schema.drug_exposure as de            ON de.person_id = ch.subject_id
 JOIN @vocabulary_database_schema.concept as c            ON de.drug_concept_id = c.concept_id

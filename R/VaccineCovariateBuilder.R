@@ -25,14 +25,13 @@ getDbVaccineCovariateData <- function(connection,
                                       covariateSettings,
                                       aggregated = FALSE) {
 
-  writeLines("Constructing Vaccine covariates using CVX Groups")
-  ParallelLogger::logInfo(paste0("*** Constructing Vaccine covariates using CVX Groups for ", cohortId, " ***"))
+#  ParallelLogger::logInfo(paste0("*** Constructing Vaccine covariates using CVX Groups for ", cohortId, " ***"))
   #if (rowIdField != "subject_id") stop(paste0("Only subject_id as rowId is supported. This value was used ", rowIdField))
+
   if (aggregated)  aggregated <- FALSE #stop("Aggregation not supported")
 
   sqlFile <- "VaccineCovariatesBasedOnCVXGroups.sql"
   cohortDatabaseSchema <- covariateSettings$cohortDatabaseSchema
-  
   
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = sqlFile,
                                            packageName = "IUDEHRStudy",
@@ -50,6 +49,8 @@ getDbVaccineCovariateData <- function(connection,
   # sqlResult <- DatabaseConnector::executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
   sqlResult <- DatabaseConnector::querySql(connection, sql, snakeCaseToCamelCase = TRUE)
 
+  
+  
   if (nrow(sqlResult) < 1) {
     message("No persons in the cohort with vaccine covariates.")
   }
@@ -58,7 +59,7 @@ getDbVaccineCovariateData <- function(connection,
   #ToDo: 
   covariates <- unique(sqlResult[, c("rowId", "covariateId", "covariateValue")])
   covariateRef <- unique(sqlResult[, c("covariateId", "covariateName", "analysisId")]) #, "conceptId")])
-  covariateRef$analysisId <- 555#covariateSettings$analysisId
+  covariateRef$analysisId <- 555 #expliciting setting the analysis id it could be covariateSettings$analysisId
   
 
   # Construct analysis reference:
