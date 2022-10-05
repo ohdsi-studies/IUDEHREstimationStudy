@@ -1,6 +1,6 @@
-# Copyright 2019 Observational Health Data Sciences and Informatics
+# Copyright 2020 Observational Health Data Sciences and Informatics
 #
-# This file is part of IUDEHRStudy
+# This file is part of IUDClaimsStudy
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,35 +14,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Submit the study results to the study coordinating center
-#'
-#' @details
-#' This will upload the file \code{StudyResults.zip} to the study coordinating center using Amazon S3.
-#' This requires an active internet connection.
-#'
-#' @param outputFolder   Name of local folder where the results were generated; make sure to use forward slashes
-#'                       (/). Do not use a folder on a network drive since this greatly impacts
-#'                       performance.
-#' @param userName       The username used to submit resutls to the study coordinator
-#' @param privateKeyFile         The private key as provided by the study coordinator
-#'
-#' @return
-#' TRUE if the upload was successful.
-#'
+#' Upload results to OHDSI server
+#' 
+#' @details 
+#' This function uploads the 'Results_<databaseId>.zip' to the OHDSI SFTP server. Before sending, you can inspect the zip file,
+#' wich contains (zipped) CSV files. You can send the zip file from a different computer than the one on which is was created.
+#' 
+#' @param privateKeyFileName   A character string denoting the path to the RSA private key provided by the study coordinator.
+#' @param userName             A character string containing the user name provided by the study coordinator.
+#' @param outputFolder         Name of local folder where the results were generated; make sure to use forward slashes
+#'                             (/). Do not use a folder on a network drive since this greatly impacts
+#'                             performance.                             
 #' @export
-submitResults <- function(outputFolder, fileName, userName, privateKeyFile) {
-  zipName <- file.path(outputFolder, fileName)
-  if (!file.exists(zipName)) {
-    stop(paste("Cannot find file", zipName))
+uploadResults <- function(outputFolder, privateKeyFileName, userName) {
+  fileName <- list.files(outputFolder, "^Results_.*.zip$", full.names = TRUE)
+  if (length(fileName) == 0) {
+    stop("Could find results file in folder. Did you run (and complete) execute?") 
   }
-  writeLines(paste0("Uploading file '", zipName, "' to study coordinating center"))
-  result <- OhdsiSharing::sftpUploadFile(privateKeyFileName = privateKeyFile, 
-                                         userName = userName, 
-                                         fileName = zipName)
-  if (result) {
-    writeLines("Upload complete")
-  } else {
-    writeLines("Upload failed. Please contact the study coordinator")
+  if (length(fileName) == 0) {
+    stop("Multiple results files found. Don't know which one to upload") 
   }
-  invisible(result)
+  OhdsiSharing::sftpUploadFile(privateKeyFileName = privateKeyFileName, 
+                               userName = userName,
+                               remoteFolder = "cohortEvaluation",
+                               fileName = fileName)
+  ParallelLogger::logInfo("Finished uploading")
 }

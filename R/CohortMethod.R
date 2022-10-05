@@ -1,4 +1,4 @@
-# Copyright 2019 Observational Health Data Sciences and Informatics
+# Copyright 2020 Observational Health Data Sciences and Informatics
 #
 # This file is part of IUDEHRStudy
 #
@@ -55,6 +55,26 @@ runCohortMethod <- function(connectionDetails,
                                     "cmAnalysisList.json",
                                     package = "IUDEHRStudy")
   cmAnalysisList <- CohortMethod::loadCmAnalysisList(cmAnalysisListFile)
+  # create the vaccine covariate settings
+  vaccineCovariateSettings <- createVaccineCovariateSettings(lookbackDays = 3650, cohortTable = cohortTable, cohortDatabaseSchema = cohortDatabaseSchema)
+
+  # for (analysis in cmAnalysisList) {
+  for (i in 1:length(cmAnalysisList)) {
+    # combine both covariate settings into a list
+    cmAnalysisList[[i]]$getDbCohortMethodDataArgs$covariateSettings <- list(cmAnalysisList[[i]]$getDbCohortMethodDataArgs$covariateSettings, vaccineCovariateSettings)
+    # covariateSettingsList <- list(analysis$getDbCohortMethodDataArgs$covariateSettings, vaccineCovariateSettings)
+    # analysis$getDbCohortMethodDataArgs$covariateSettings <- covariateSettingsList
+    # run feature extraction as normal
+# run feature extraction as normal
+# covariates <- getDbCovariateData(connectionDetails = connectionDetails,
+#                                  cdmDatabaseSchema = cdmDatabaseSchema,
+#                                  cohortDatabaseSchema = cohortDatabaseSchema,
+#                                  cohortTable = "iudstudy",
+#                                  cohortId = 1771648, # The cohort to extract features for
+#                                  covariateSettings = covariateSettingsList)
+  }
+
+
   tcosList <- createTcos(outputFolder = outputFolder)
   outcomesOfInterest <- getOutcomesOfInterest()
   results <- CohortMethod::runCmAnalyses(connectionDetails = connectionDetails,
@@ -106,8 +126,8 @@ computeCovariateBalance <- function(row, cmOutputFolder, balanceFolder) {
                               sprintf("bal_t%s_c%s_o%s_a%s.rds", row$targetId, row$comparatorId, row$outcomeId, row$analysisId))
   if (!file.exists(outputFileName)) {
     ParallelLogger::logTrace("Creating covariate balance file ", outputFileName)
-    cohortMethodDataFolder <- file.path(cmOutputFolder, row$cohortMethodDataFolder)
-    cohortMethodData <- CohortMethod::loadCohortMethodData(cohortMethodDataFolder)
+    cohortMethodDataFile <- file.path(cmOutputFolder, row$cohortMethodDataFile)
+    cohortMethodData <- CohortMethod::loadCohortMethodData(cohortMethodDataFile)
     strataFile <- file.path(cmOutputFolder, row$strataFile)
     strata <- readRDS(strataFile)
     balance <- CohortMethod::computeCovariateBalance(population = strata, cohortMethodData = cohortMethodData)

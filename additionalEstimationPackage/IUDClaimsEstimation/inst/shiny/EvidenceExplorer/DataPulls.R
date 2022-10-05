@@ -92,7 +92,7 @@ getDatabaseDetails <- function(connection, databaseId) {
   databaseDetails <- querySql(connection, sql)
   colnames(databaseDetails) <- SqlRender::snakeCaseToCamelCase(colnames(databaseDetails))
   databaseDetails$description <- sub("\\n", " ", databaseDetails$description)
-  databaseDetails$description <- sub("JDMC", "JMDC", databaseDetails$description)
+  databaseDetails$description <- sub("JDMC", "JMDC", databaseDetails$description) # TODO Fix in schema
   return(databaseDetails)
 }
 
@@ -277,6 +277,7 @@ getCovariateBalance <- function(connection,
                                 analysisId,
                                 outcomeId = NULL) {
   file <- sprintf("covariate_balance_t%s_c%s_%s.rds", targetId, comparatorId, databaseId)
+  print(file)
   balance <- readRDS(file.path(dataFolder, file))
   colnames(balance) <- SqlRender::snakeCaseToCamelCase(colnames(balance))
   balance <- balance[balance$analysisId == analysisId & balance$outcomeId == outcomeId, ]

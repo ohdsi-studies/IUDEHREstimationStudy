@@ -875,8 +875,11 @@
       "id": 47
     }
   ],
+  "EndStrategy": null,
   "cdmVersionRange": ">=5.0.0",
   "CensoringCriteria": [],
+  "Title": null,
+  "AdditionalCriteria": null,
   "QualifiedLimit": {"Type": "First"},
   "InclusionRules": [
     {
@@ -918,6 +921,7 @@
             }},
             "Occurrence": {
               "Type": 0,
+              "CountColumn": null,
               "IsDistinct": false,
               "Count": 0
             }
@@ -955,6 +959,7 @@
             }},
             "Occurrence": {
               "Type": 0,
+              "CountColumn": null,
               "IsDistinct": false,
               "Count": 0
             }
@@ -992,6 +997,7 @@
             }},
             "Occurrence": {
               "Type": 0,
+              "CountColumn": null,
               "IsDistinct": false,
               "Count": 0
             }
@@ -1029,6 +1035,7 @@
             }},
             "Occurrence": {
               "Type": 0,
+              "CountColumn": null,
               "IsDistinct": false,
               "Count": 0
             }
@@ -1073,6 +1080,7 @@
             }},
             "Occurrence": {
               "Type": 0,
+              "CountColumn": null,
               "IsDistinct": false,
               "Count": 0
             }
@@ -1167,11 +1175,13 @@
             "OccurrenceStartDate": null,
             "ConditionType": null,
             "ConditionSourceConcept": null,
+            "ConditionStatus": null,
             "StopReason": null,
             "Age": null
           }},
           "Occurrence": {
             "Type": 0,
+            "CountColumn": null,
             "IsDistinct": false,
             "Count": 0
           }

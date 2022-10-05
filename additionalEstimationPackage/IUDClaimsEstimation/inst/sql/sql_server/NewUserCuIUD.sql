@@ -15,17 +15,15 @@ UNION  select c.concept_id
   and c.invalid_reason is null
 
 ) I
-) C;
-INSERT INTO #Codesets (codeset_id, concept_id)
+) C UNION ALL
 SELECT 1 as codeset_id, c.concept_id FROM (select distinct I.concept_id FROM
-( 
+(
   select concept_id from @vocabulary_database_schema.CONCEPT where concept_id in (4061405)
 
 ) I
-) C;
-INSERT INTO #Codesets (codeset_id, concept_id)
+) C UNION ALL
 SELECT 3 as codeset_id, c.concept_id FROM (select distinct I.concept_id FROM
-( 
+(
   select concept_id from @vocabulary_database_schema.CONCEPT where concept_id in (4186930)
 UNION  select c.concept_id
   from @vocabulary_database_schema.CONCEPT c
@@ -34,17 +32,15 @@ UNION  select c.concept_id
   and c.invalid_reason is null
 
 ) I
-) C;
-INSERT INTO #Codesets (codeset_id, concept_id)
+) C UNION ALL
 SELECT 25 as codeset_id, c.concept_id FROM (select distinct I.concept_id FROM
-( 
+(
   select concept_id from @vocabulary_database_schema.CONCEPT where concept_id in (4072712,44513457,4032736,43020953,2008124,4074284,44512751,44513458,4238715,2110195)
 
 ) I
-) C;
-INSERT INTO #Codesets (codeset_id, concept_id)
+) C UNION ALL
 SELECT 47 as codeset_id, c.concept_id FROM (select distinct I.concept_id FROM
-( 
+(
   select concept_id from @vocabulary_database_schema.CONCEPT where concept_id in (443392)
 UNION  select c.concept_id
   from @vocabulary_database_schema.CONCEPT c
@@ -64,10 +60,9 @@ UNION  select c.concept_id
 
 ) E ON I.concept_id = E.concept_id
 WHERE E.concept_id is null
-) C;
-INSERT INTO #Codesets (codeset_id, concept_id)
+) C UNION ALL
 SELECT 48 as codeset_id, c.concept_id FROM (select distinct I.concept_id FROM
-( 
+(
   select concept_id from @vocabulary_database_schema.CONCEPT where concept_id in (2718682)
 UNION  select c.concept_id
   from @vocabulary_database_schema.CONCEPT c
@@ -76,8 +71,8 @@ UNION  select c.concept_id
   and c.invalid_reason is null
 
 ) I
-) C;
-
+) C
+;
 
 with primary_events (event_id, person_id, start_date, end_date, op_start_date, op_end_date, visit_occurrence_id) as
 (

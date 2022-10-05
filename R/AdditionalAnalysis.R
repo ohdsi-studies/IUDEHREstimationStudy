@@ -51,6 +51,7 @@ runCohortCharacterization <- function(connectionDetails,
     covariateSettings$DemographicsAge <- TRUE # Need to Age (Median, IQR)
     covariateSettings$DemographicsPostObservationTime <- TRUE # Need to calculate Person-Year Observation post index date (Median, IQR)
     
+    
     covariateData2 <- FeatureExtraction::getDbCovariateData(connectionDetails = connectionDetails,
                                                             cdmDatabaseSchema = cdmDatabaseSchema,
                                                             cohortDatabaseSchema = cohortDatabaseSchema,
@@ -156,9 +157,9 @@ extractParametersFromName <- function(fileName) {
 }
 getCustomizeTable1Specs <- function() {
   s <- FeatureExtraction::getDefaultTable1Specifications()
-  appendedTable1Spec <- rbind(s, c("Age", 2,"")) # Add Age as a continuous variable to table1
-  appendedTable1Spec <- rbind(appendedTable1Spec, c("PriorObservationTime", 8,"")) # Add Observation prior index date
-  appendedTable1Spec <- rbind(appendedTable1Spec, c("PostObservationTime", 9,"")) # Add Observation post index date
+  appendedTable1Spec <- rbind(s, c("Age", 2, NA)) # Add Age as a continuous variable to table1
+  appendedTable1Spec <- rbind(appendedTable1Spec, c("PriorObservationTime", 8, NA)) # Add Observation prior index date
+  appendedTable1Spec <- rbind(appendedTable1Spec, c("PostObservationTime", 9, NA)) # Add Observation post index date
   return(appendedTable1Spec)
 }
 
