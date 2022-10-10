@@ -176,7 +176,7 @@ calculateCumulativeIncidence <- function(connectionDetails,
 
   conn <- DatabaseConnector::connect(connectionDetails)
   sql <- SqlRender::loadRenderTranslateSql("CumulativeIncidence.sql",
-                                           "IUDEHRStudy",
+                                           "IUDClaimsStudy",
                                            dbms = connectionDetails$dbms,
                                            target_database_schema = cohortDatabaseSchema,
                                            cdm_database_schema = cdmDatabaseSchema,
@@ -202,7 +202,7 @@ calculatePerYearCohortInclusion <- function(connectionDetails,
                                             minCellCount) {
   
   sql <- SqlRender::loadRenderTranslateSql("GetCountsPerYear.sql",
-                                           "IUDEHRStudy",
+                                           "IUDClaimsStudy",
                                            dbms = connectionDetails$dbms,
                                            target_database_schema = cohortDatabaseSchema,
                                            study_cohort_table = cohortTable,
