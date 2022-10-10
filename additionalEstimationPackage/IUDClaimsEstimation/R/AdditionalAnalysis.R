@@ -49,6 +49,7 @@ runCohortCharacterization <- function(connectionDetails,
     
     covariateSettings <- FeatureExtraction::createDefaultCovariateSettings()
     covariateSettings$DemographicsAge <- TRUE # Need to Age (Median, IQR)
+    covariateSettings$DemographicsPriorObservationTime <- TRUE # Need to calculate Person-Year Observation prior index date (Median, IQR)
     covariateSettings$DemographicsPostObservationTime <- TRUE # Need to calculate Person-Year Observation post index date (Median, IQR)
     
     covariateData2 <- FeatureExtraction::getDbCovariateData(connectionDetails = connectionDetails,
