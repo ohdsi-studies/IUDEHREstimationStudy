@@ -282,5 +282,4 @@ createAndLoadFileToTable <- function(pathToCsv, sep = ",", connectionDetails, co
     DatabaseConnector::executeSql(connection, insertSql)
   }
   disconnect(connection)
-}
 
