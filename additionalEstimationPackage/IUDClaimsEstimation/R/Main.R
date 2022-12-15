@@ -235,3 +235,52 @@ validCohort <- function(cohortId, cohortCounts, minCellCount) {
     return(length(index)!=0 && cohortCounts$personCount[index] > minCellCount)
 
 }
+
+initializeStudy <- function(outputFolder, connectionDetails, cohortDatabaseSchema, oracleTempSchema, package, reloadData = TRUE) {
+  if (!file.exists(outputFolder))
+    dir.create(outputFolder, recursive = TRUE)
+  ParallelLogger::addDefaultFileLogger(file.path(outputFolder, "log.txt"))
+  ParallelLogger::addDefaultErrorReportLogger(file.path(outputFolder, "errorReportR.txt"))
+
+  if (reloadData) {
+    #load CVX Groupings
+    ParallelLogger::logInfo("Loading CVX Groupings")
+    pathToCsv <- system.file("settings", "CvxGroups.txt", package = package)
+    createAndLoadFileToTable(pathToCsv, sep = "|", connectionDetails, cohortDatabaseSchema, createTableFile = "CreateCVXGroupsTable.sql", tableName = "cvx_groups", oracleTempSchema, package)
+
+  }
+}
+
+createAndLoadFileToTable <- function(pathToCsv, sep = ",", connectionDetails, cohortDatabaseSchema, createTableFile, tableName, oracleTempSchema, package) {
+  #Create table to load data
+  connection <- DatabaseConnector::connect(connectionDetails)
+  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = createTableFile,
+                                           packageName = package,
+                                           dbms = attr(connection, "dbms"),
+                                           tempEmulationSchema = oracleTempSchema,
+                                           target_database_schema = cohortDatabaseSchema,
+                                           table_name = tableName)
+  DatabaseConnector::executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
+
+
+  #Load data from csv file
+  data <- read.csv(file = pathToCsv, sep = sep, stringsAsFactors=FALSE, colClasses=c("cvx_code" = "character","cvx_for_vaccine_group"="character"))
+  #Construct the values to insert
+  # paste0(apply(head(data), 1, function(x) paste0("('", paste0(x, collapse = "', '"), "')")), collapse = ", ")
+  #batch load the rows
+  chunk <- 1000
+  n <- nrow(data)
+  r <- rep(1:ceiling(n / chunk), each = chunk)[1:n]
+  d <- split(data, r)
+
+  for (i in d) {
+    # values <- paste0("(", apply(apply(i, 1, function(x) ifelse(is.na(strtoi(x)), paste0("'", x,"'"), paste0(x))), 2, function(x) paste(x, collapse = ", ")), ")", collapse=",")
+    values <-   paste0(apply(data, 1, function(x) paste0("('", paste0(str_trim(x), collapse = "', '"), "')")), collapse = ", ")
+    sql <- paste0("INSERT INTO @target_database_schema.@table_name VALUES ", values, ";")
+    renderedSql <- SqlRender::render(sql = sql, target_database_schema = cohortDatabaseSchema, table_name = tableName)
+    insertSql <- SqlRender::translate(renderedSql, targetDialect = attr(connection, "dbms"))
+    DatabaseConnector::executeSql(connection, insertSql)
+  }
+  disconnect(connection)
+}
+
