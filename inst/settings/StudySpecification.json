@@ -5375,7 +5375,7 @@
   ],
   "doPositiveControlSynthesis": false,
   "id": 426,
-  "packageName": "IUDEHRStudy",
+  "packageName": "IUDStudy",
   "negativeControls": [
     {
       "targetId": 1771647,

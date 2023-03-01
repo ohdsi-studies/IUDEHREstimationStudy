@@ -1,6 +1,6 @@
 # Copyright 2020 Observational Health Data Sciences and Informatics
 #
-# This file is part of IUDEHRStudy
+# This file is part of IUDStudy
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ prepareForEvidenceExplorer <- function(resultsZipFile, dataFolder) {
 #' @export
 launchEvidenceExplorer <- function(dataFolder, blind = TRUE, launch.browser = TRUE) {
   ensure_installed("DT")
-  appDir <- system.file("shiny", "EvidenceExplorer", package = "IUDEHRStudy")
+  appDir <- system.file("shiny", "EvidenceExplorer", package = "IUDStudy")
   .GlobalEnv$shinySettings <- list(dataFolder = dataFolder, blind = blind)
   on.exit(rm(shinySettings, envir=.GlobalEnv))
   shiny::runApp(appDir) 

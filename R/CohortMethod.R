@@ -1,6 +1,6 @@
 # Copyright 2020 Observational Health Data Sciences and Informatics
 #
-# This file is part of IUDEHRStudy
+# This file is part of IUDStudy
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@
 #'                             performance.
 #' @param maxCores             How many parallel cores should be used? If more cores are made available
 #'                             this can speed up the analyses.
+#' @param isClaimsData          If the data is claims data
 #'
 #' @export
 runCohortMethod <- function(connectionDetails,
@@ -46,14 +47,22 @@ runCohortMethod <- function(connectionDetails,
                             cohortTable,
                             oracleTempSchema,
                             outputFolder,
-                            maxCores) {
+                            maxCores,
+                            isClaimsData = FALSE) {
+  
   cmOutputFolder <- file.path(outputFolder, "cmOutput")
   if (!file.exists(cmOutputFolder)) {
     dir.create(cmOutputFolder)
   }
-  cmAnalysisListFile <- system.file("settings",
-                                    "cmAnalysisList.json",
-                                    package = "IUDEHRStudy")
+  if (isClaimsData) {
+    cmAnalysisListFile <- system.file("settings",
+                                      "cmAnalysisListClaims.json",
+                                      package = "IUDStudy")
+  } else {
+    cmAnalysisListFile <- system.file("settings",
+                                      "cmAnalysisList.json",
+                                      package = "IUDStudy")
+  }
   cmAnalysisList <- CohortMethod::loadCmAnalysisList(cmAnalysisListFile)
   # create the vaccine covariate settings
   vaccineCovariateSettings <- createVaccineCovariateSettings(lookbackDays = 3650, cohortTable = cohortTable, cohortDatabaseSchema = cohortDatabaseSchema)
@@ -76,7 +85,7 @@ runCohortMethod <- function(connectionDetails,
 
 
   tcosList <- createTcos(outputFolder = outputFolder)
-  outcomesOfInterest <- getOutcomesOfInterest()
+  outcomesOfInterest <- getOutcomesOfInterest(isClaimsData = isClaimsData)
   results <- CohortMethod::runCmAnalyses(connectionDetails = connectionDetails,
                                          cdmDatabaseSchema = cdmDatabaseSchema,
                                          exposureDatabaseSchema = cohortDatabaseSchema,
@@ -103,7 +112,7 @@ runCohortMethod <- function(connectionDetails,
   analysisSummary <- addCohortNames(analysisSummary, "targetId", "targetName")
   analysisSummary <- addCohortNames(analysisSummary, "comparatorId", "comparatorName")
   analysisSummary <- addCohortNames(analysisSummary, "outcomeId", "outcomeName")
-  analysisSummary <- addAnalysisDescription(analysisSummary, "analysisId", "analysisDescription")
+  analysisSummary <- addAnalysisDescription(analysisSummary, "analysisId", "analysisDescription", isClaimsData)
   write.csv(analysisSummary, file.path(outputFolder, "analysisSummary.csv"), row.names = FALSE)
   
   ParallelLogger::logInfo("Computing covariate balance") 
@@ -135,10 +144,16 @@ computeCovariateBalance <- function(row, cmOutputFolder, balanceFolder) {
   }
 }
 
-addAnalysisDescription <- function(data, IdColumnName = "analysisId", nameColumnName = "analysisDescription") {
-  cmAnalysisListFile <- system.file("settings",
-                                    "cmAnalysisList.json",
-                                    package = "IUDEHRStudy")
+addAnalysisDescription <- function(data, IdColumnName = "analysisId", nameColumnName = "analysisDescription", isClaimsData = FALSE) {
+  if (isClaimsData) {
+    cmAnalysisListFile <- system.file("settings",
+                                      "cmAnalysisListClaims.json",
+                                      package = "IUDStudy")
+  } else {
+    cmAnalysisListFile <- system.file("settings",
+                                      "cmAnalysisList.json",
+                                      package = "IUDStudy")
+  }
   cmAnalysisList <- CohortMethod::loadCmAnalysisList(cmAnalysisListFile)
   idToName <- lapply(cmAnalysisList, function(x) data.frame(analysisId = x$analysisId, description = as.character(x$description)))
   idToName <- do.call("rbind", idToName)
@@ -153,10 +168,14 @@ addAnalysisDescription <- function(data, IdColumnName = "analysisId", nameColumn
   return(data)
 }
 
-createTcos <- function(outputFolder) {
-  pathToCsv <- system.file("settings", "TcosOfInterest.csv", package = "IUDEHRStudy")
+createTcos <- function(outputFolder, isClaimsData = FALSE) {
+  if (isClaimsData) {
+    pathToCsv <- system.file("settings", "TcosOfInterestClaims.json", package = "IUDStudy")
+  } else {
+    pathToCsv <- system.file("settings", "TcosOfInterest.json", package = "IUDStudy")
+  }
   tcosOfInterest <- read.csv(pathToCsv, stringsAsFactors = FALSE)
-  allControls <- getAllControls(outputFolder)
+  allControls <- getAllControls(outputFolder, isClaimsData)
   tcs <- unique(rbind(tcosOfInterest[, c("targetId", "comparatorId")],
                       allControls[, c("targetId", "comparatorId")]))
   createTco <- function(i) {
@@ -188,8 +207,12 @@ createTcos <- function(outputFolder) {
   return(tcosList)
 }
 
-getOutcomesOfInterest <- function() {
-  pathToCsv <- system.file("settings", "TcosOfInterest.csv", package = "IUDEHRStudy")
+getOutcomesOfInterest <- function(isClaimsData = FALSE) {
+  if (isClaimsData) {
+    pathToCsv <- system.file("settings", "TcosOfInterestClaims.json", package = "IUDStudy")
+  } else {
+    pathToCsv <- system.file("settings", "TcosOfInterest.json", package = "IUDStudy")
+  }
   tcosOfInterest <- read.csv(pathToCsv, stringsAsFactors = FALSE) 
   outcomeIds <- as.character(tcosOfInterest$outcomeIds)
   outcomeIds <- do.call("c", (strsplit(outcomeIds, split = ";")))
@@ -197,14 +220,18 @@ getOutcomesOfInterest <- function() {
   return(outcomeIds)
 }
 
-getAllControls <- function(outputFolder) {
+getAllControls <- function(outputFolder, isClaimsData = FALSE) {
   allControlsFile <- file.path(outputFolder, "AllControls.csv")
   if (file.exists(allControlsFile)) {
     # Positive controls must have been synthesized. Include both positive and negative controls.
     allControls <- read.csv(allControlsFile)
   } else {
     # Include only negative controls
-    pathToCsv <- system.file("settings", "NegativeControls.csv", package = "IUDEHRStudy")
+    if (isClaimsData) {
+      pathToCsv <- system.file("settings", "NegativeControlsClaims.csv", package = "IUDStudy")
+    } else {
+      pathToCsv <- system.file("settings", "NegativeControls.csv", package = "IUDStudy")
+    }
     allControls <- read.csv(pathToCsv)
     allControls$oldOutcomeId <- allControls$outcomeId
     allControls$targetEffectSize <- rep(1, nrow(allControls))

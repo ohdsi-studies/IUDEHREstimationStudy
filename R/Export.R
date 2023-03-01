@@ -1,6 +1,6 @@
 # Copyright 2020 Observational Health Data Sciences and Informatics
 #
-# This file is part of IUDEHRStudy
+# This file is part of IUDStudy
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@
 #' @param minCellCount          The minimum cell count for fields contains person counts or fractions.
 #' @param maxCores              How many parallel cores should be used? If more cores are made
 #'                              available this can speed up the analyses.
+#' @param isClaimsData          Is the data claims data?
 #'
 #' @export
 exportResults <- function(outputFolder,
@@ -35,39 +36,46 @@ exportResults <- function(outputFolder,
                           databaseName,
                           databaseDescription,
                           minCellCount = 5,
-                          maxCores) {
+                          maxCores,
+                          isClaimsData) {
   exportFolder <- file.path(outputFolder, "export")
   if (!file.exists(exportFolder)) {
     dir.create(exportFolder, recursive = TRUE)
   }
   
   exportAnalyses(outputFolder = outputFolder,
-                 exportFolder = exportFolder)
+                 exportFolder = exportFolder,
+                 isClaimsData = isClaimsData)
   
   exportExposures(outputFolder = outputFolder,
-                  exportFolder = exportFolder)
+                  exportFolder = exportFolder,
+                  isClaimsData = isClaimsData)
   
   exportOutcomes(outputFolder = outputFolder,
-                 exportFolder = exportFolder)
+                 exportFolder = exportFolder,
+                 isClaimsData = isClaimsData)
   
   exportMetadata(outputFolder = outputFolder,
                  exportFolder = exportFolder,
                  databaseId = databaseId,
                  databaseName = databaseName,
                  databaseDescription = databaseDescription,
-                 minCellCount = minCellCount)
+                 minCellCount = minCellCount,
+                 isClaimsData = isClaimsData)
   
   exportMainResults(outputFolder = outputFolder,
                     exportFolder = exportFolder,
                     databaseId = databaseId,
                     minCellCount = minCellCount,
-                    maxCores = maxCores)
+                    maxCores = maxCores,
+                    isClaimsData = isClaimsData)
   
   exportDiagnostics(outputFolder = outputFolder,
                     exportFolder = exportFolder,
                     databaseId = databaseId,
                     minCellCount = minCellCount,
-                    maxCores = maxCores)
+                    maxCores = maxCores,
+                    isClaimsData = isClaimsData)
   
   # Add all to zip file -------------------------------------------------------------------------------
   ParallelLogger::logInfo("Adding results to zip file")
@@ -79,15 +87,21 @@ exportResults <- function(outputFolder,
   ParallelLogger::logInfo("Results are ready for sharing at:", zipName)
 }
 
-exportAnalyses <- function(outputFolder, exportFolder) {
+exportAnalyses <- function(outputFolder, exportFolder, isClaimsData = FALSE) {
   ParallelLogger::logInfo("Exporting analyses")
   ParallelLogger::logInfo("- cohort_method_analysis table")
-  
+
   tempFileName <- tempfile()
-  
-  cmAnalysisListFile <- system.file("settings",
-                                    "cmAnalysisList.json",
-                                    package = "IUDEHRStudy")
+
+  if (isClaimsData) {
+    cmAnalysisListFile <- system.file("settings",
+                                      "cmAnalysisListClaims.json",
+                                      package = "IUDStudy")
+  } else {
+    cmAnalysisListFile <- system.file("settings",
+                                      "cmAnalysisList.json",
+                                      package = "IUDStudy")
+  }
   cmAnalysisList <- CohortMethod::loadCmAnalysisList(cmAnalysisListFile)
   cmAnalysisToRow <- function(cmAnalysis) {
     ParallelLogger::saveSettingsToJson(cmAnalysis, tempFileName)
@@ -122,17 +136,25 @@ exportAnalyses <- function(outputFolder, exportFolder) {
   readr::write_csv(covariateAnalysis, fileName)
 }
 
-exportExposures <- function(outputFolder, exportFolder) {
+exportExposures <- function(outputFolder, exportFolder, isClaimsData = FALSE) {
   ParallelLogger::logInfo("Exporting exposures")
   ParallelLogger::logInfo("- exposure_of_interest table")
-  pathToCsv <- system.file("settings", "TcosOfInterest.csv", package = "IUDEHRStudy")
+  if (isClaimsData) {
+    pathToCsv <- system.file("settings", "TcosOfInterestClaims.csv", package = "IUDStudy")
+  } else {
+    pathToCsv <- system.file("settings", "TcosOfInterest.csv", package = "IUDStudy")
+  }
   tcosOfInterest <- read.csv(pathToCsv, stringsAsFactors = FALSE)
-  pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDEHRStudy")
+  if (isClaimsData) {
+    pathToCsv <- system.file("settings", "CohortsToCreateClaims.csv", package = "IUDStudy")
+  } else {
+    pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDStudy")
+  }
   cohortsToCreate <- read.csv(pathToCsv)
   createExposureRow <- function(exposureId) {
     atlasName <- as.character(cohortsToCreate$atlasName[cohortsToCreate$cohortId == exposureId])
     name <- as.character(cohortsToCreate$name[cohortsToCreate$cohortId == exposureId])
-    cohortFileName <- system.file("cohorts", paste0(name, ".json"), package = "IUDEHRStudy")
+    cohortFileName <- system.file("cohorts", paste0(name, ".json"), package = "IUDStudy")
     definition <- readChar(cohortFileName, file.info(cohortFileName)$size)
     return(tibble::tibble(exposureId = exposureId,
                           exposureName = atlasName,
@@ -146,21 +168,25 @@ exportExposures <- function(outputFolder, exportFolder) {
   readr::write_csv(exposureOfInterest, fileName)
 }
 
-exportOutcomes <- function(outputFolder, exportFolder) {
+exportOutcomes <- function(outputFolder, exportFolder, isClaimsData) {
   ParallelLogger::logInfo("Exporting outcomes")
   ParallelLogger::logInfo("- outcome_of_interest table")
-  pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDEHRStudy")
+  if (isClaimsData) {
+    pathToCsv <- system.file("settings", "CohortsToCreateClaims.csv", package = "IUDStudy")
+  } else {
+    pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDStudy")
+  }
   cohortsToCreate <- read.csv(pathToCsv)
   createOutcomeRow <- function(outcomeId) {
     atlasName <- as.character(cohortsToCreate$atlasName[cohortsToCreate$cohortId == outcomeId])
     name <- as.character(cohortsToCreate$name[cohortsToCreate$cohortId == outcomeId])
-    cohortFileName <- system.file("cohorts", paste0(name, ".json"), package = "IUDEHRStudy")
+    cohortFileName <- system.file("cohorts", paste0(name, ".json"), package = "IUDStudy")
     definition <- readChar(cohortFileName, file.info(cohortFileName)$size)
     return(tibble::tibble(outcomeId = outcomeId,
                           outcomeName = atlasName,
                           definition = definition))
   }
-  outcomesOfInterest <- getOutcomesOfInterest()
+  outcomesOfInterest <- getOutcomesOfInterest(isClaimsData)
   outcomeOfInterest <- lapply(outcomesOfInterest, createOutcomeRow)
   outcomeOfInterest <- do.call("rbind", outcomeOfInterest)
   colnames(outcomeOfInterest) <- SqlRender::camelCaseToSnakeCase(colnames(outcomeOfInterest))
@@ -169,7 +195,11 @@ exportOutcomes <- function(outputFolder, exportFolder) {
   
   
   ParallelLogger::logInfo("- negative_control_outcome table")
-  pathToCsv <- system.file("settings", "NegativeControls.csv", package = "IUDEHRStudy")
+  if (isClaimsData) {
+    pathToCsv <- system.file("settings", "NegativeControlsClaims.csv", package = "IUDStudy")
+  } else {
+    pathToCsv <- system.file("settings", "NegativeControls.csv", package = "IUDStudy")
+  }
   negativeControls <- read.csv(pathToCsv)
   negativeControls <- negativeControls[tolower(negativeControls$type) == "outcome", ]
   negativeControls <- negativeControls[, c("outcomeId", "outcomeName")]
@@ -181,7 +211,11 @@ exportOutcomes <- function(outputFolder, exportFolder) {
   synthesisSummaryFile <- file.path(outputFolder, "SynthesisSummary.csv")
   if (file.exists(synthesisSummaryFile)) {
     positiveControls <- read.csv(synthesisSummaryFile, stringsAsFactors = FALSE)
-    pathToCsv <- system.file("settings", "NegativeControls.csv", package = "IUDEHRStudy")
+    if (isClaimsData) {
+      pathToCsv <- system.file("settings", "NegativeControlsClaims.csv", package = "IUDStudy")
+    } else {
+      pathToCsv <- system.file("settings", "NegativeControls.csv", package = "IUDStudy")
+    }
     negativeControls <- read.csv(pathToCsv)
     positiveControls <- merge(positiveControls,
                               negativeControls[, c("outcomeId", "outcomeName")])
@@ -209,7 +243,8 @@ exportMetadata <- function(outputFolder,
                            databaseId,
                            databaseName,
                            databaseDescription,
-                           minCellCount) {
+                           minCellCount,
+                           isClaimsData) {
   ParallelLogger::logInfo("Exporting metadata")
   
   getInfo <- function(row) {
@@ -278,7 +313,7 @@ exportMetadata <- function(outputFolder,
   if (file.exists(fileName)) {
     unlink(fileName)
   }
-  outcomesOfInterest <- getOutcomesOfInterest()
+  outcomesOfInterest <- getOutcomesOfInterest(isClaimsData)
   reference <- readRDS(file.path(outputFolder, "cmOutput", "outcomeModelReference.rds"))
   reference <- reference[reference$outcomeId %in% outcomesOfInterest, ]
   first <- !file.exists(fileName)
@@ -385,7 +420,7 @@ exportMetadata <- function(outputFolder,
                           comparator_max_days = comparatorDist[7])
     return(row)
   }
-  outcomesOfInterest <- getOutcomesOfInterest()
+  outcomesOfInterest <- getOutcomesOfInterest(isClaimsData)
   reference <- readRDS(file.path(outputFolder, "cmOutput", "outcomeModelReference.rds"))
   reference <- reference[reference$outcomeId %in% outcomesOfInterest, ]
   results <- plyr::llply(1:nrow(reference), getResult, .progress = "text")
@@ -421,13 +456,14 @@ exportMainResults <- function(outputFolder,
                               exportFolder,
                               databaseId,
                               minCellCount,
-                              maxCores) {
+                              maxCores,
+                              isClaimsData) {
   ParallelLogger::logInfo("Exporting main results")
   
   
   ParallelLogger::logInfo("- cohort_method_result table")
   analysesSum <- readr::read_csv(file.path(outputFolder, "analysisSummary.csv"), col_types = readr::cols())
-  allControls <- getAllControls(outputFolder)
+  allControls <- getAllControls(outputFolder, isClaimsData)
   ParallelLogger::logInfo("  Performing empirical calibration on main effects")
   cluster <- ParallelLogger::makeCluster(min(4, maxCores))
   subsets <- split(analysesSum,
@@ -498,7 +534,7 @@ exportMainResults <- function(outputFolder,
   interactions <- bind_rows(interactions)
   if (nrow(interactions) > 0) {
     ParallelLogger::logInfo("  Performing empirical calibration on interaction effects")
-    allControls <- getAllControls(outputFolder)
+    allControls <- getAllControls(outputFolder, isClaimsData)
     negativeControls <- allControls[allControls$targetEffectSize == 1, ]
     cluster <- ParallelLogger::makeCluster(min(4, maxCores))
     subsets <- split(interactions,
@@ -636,7 +672,8 @@ exportDiagnostics <- function(outputFolder,
                               exportFolder,
                               databaseId,
                               minCellCount,
-                              maxCores) {
+                              maxCores,
+                              isClaimsData) {
   ParallelLogger::logInfo("Exporting diagnostics")
   ParallelLogger::logInfo("- covariate_balance table")
   fileName <- file.path(exportFolder, "covariate_balance.csv")
@@ -870,7 +907,7 @@ exportDiagnostics <- function(outputFolder,
   ParallelLogger::logInfo("- kaplan_meier_dist table")
   ParallelLogger::logInfo("  Computing KM curves")
   reference <- readRDS(file.path(outputFolder, "cmOutput", "outcomeModelReference.rds"))
-  outcomesOfInterest <- getOutcomesOfInterest()
+  outcomesOfInterest <- getOutcomesOfInterest(isClaimsData)
   reference <- reference[reference$outcomeId %in% outcomesOfInterest, ]
   reference <- reference[, c("strataFile",
                              "studyPopFile",
@@ -883,7 +920,7 @@ exportDiagnostics <- function(outputFolder,
     dir.create(tempFolder)
   }
   cluster <- ParallelLogger::makeCluster(min(4, maxCores))
-  ParallelLogger::clusterRequire(cluster, "IUDEHRStudy")
+  ParallelLogger::clusterRequire(cluster, "IUDStudy")
   tasks <- split(reference, seq(nrow(reference)))
   ParallelLogger::clusterApply(cluster,
                                tasks,
@@ -894,6 +931,7 @@ exportDiagnostics <- function(outputFolder,
                                minCellCount = minCellCount)
   ParallelLogger::stopCluster(cluster)
   ParallelLogger::logInfo("  Writing to single csv file")
+  
   saveKmToCsv <- function(file, first, outputFile) {
     data <- readRDS(file)
     if (!is.null(data)) {

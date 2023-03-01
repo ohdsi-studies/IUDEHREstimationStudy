@@ -32,7 +32,7 @@ runCohortCharacterization <- function(connectionDetails,
                                       cohortId,
                                       outputFolder,
                                       cohortsToCreate,
-                                      cohortCounts, 
+                                      cohortCounts,
                                       minCellCount) {
   
   index <- grep(cohortId, cohortCounts$cohortDefinitionId)
@@ -177,7 +177,7 @@ calculateCumulativeIncidence <- function(connectionDetails,
 
   conn <- DatabaseConnector::connect(connectionDetails)
   sql <- SqlRender::loadRenderTranslateSql("CumulativeIncidence.sql",
-                                           "IUDEHRStudy",
+                                           "IUDStudy",
                                            dbms = connectionDetails$dbms,
                                            target_database_schema = cohortDatabaseSchema,
                                            cdm_database_schema = cdmDatabaseSchema,
@@ -203,7 +203,7 @@ calculatePerYearCohortInclusion <- function(connectionDetails,
                                             minCellCount) {
   
   sql <- SqlRender::loadRenderTranslateSql("GetCountsPerYear.sql",
-                                           "IUDEHRStudy",
+                                           "IUDStudy",
                                            dbms = connectionDetails$dbms,
                                            target_database_schema = cohortDatabaseSchema,
                                            study_cohort_table = cohortTable,
