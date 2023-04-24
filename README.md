@@ -55,6 +55,9 @@ How to run
 	
    # The folder where the study intermediate and result files will be written:
 	outputFolder <- "c:/IUDStudy"
+
+   # Boolean to indicate if data is claims vs ehr False for this case
+   isClaimsData <- FALSE
 	
    # Details for connecting to the server:
    # See ?DatabaseConnector::createConnectionDetails for help
@@ -92,7 +95,8 @@ How to run
             runAnalyses = TRUE,
             runDiagnostics = TRUE,
             packageResults = TRUE,
-            maxCores = maxCores)
+            maxCores = maxCores,
+            isClaimsData = FALSE)
 	```
 
 4. Upload the file ```export/Results_<DatabaseId>.zip``` in the output folder to the study coordinator:
@@ -131,6 +135,9 @@ maxCores <- parallel::detectCores()
 
 # Minimum cell count when exporting data:
 minCellCount <- 10
+
+ # Boolean to indicate if data is claims vs ehr TRUE for this case
+isClaimsData <- TRUE
 
 # The folder where the study intermediate and result files will be written:
 outputFolder <- paste0(outputFolder,"/IUDClaimsStudy") #If running this analysis in isolation (i.e. without EHR analysis) please enter the file directory here (i.e. "C:/IUDClaimsStudy")
@@ -171,7 +178,8 @@ IUDClaimsStudy::execute(connectionDetails = connectionDetails,
         runAnalyses = TRUE,
         runDiagnostics = TRUE,
         packageResults = TRUE,
-        maxCores = maxCores)
+        maxCores = maxCores,
+        isClaimsData = TRUE)
 ```
 
 
