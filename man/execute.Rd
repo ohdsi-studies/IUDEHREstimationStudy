@@ -21,7 +21,8 @@ execute(
   runDiagnostics = TRUE,
   packageResults = TRUE,
   maxCores = 4,
-  minCellCount = 5
+  minCellCount = 5,
+  isClaimsData = FALSE
 )
 }
 \arguments{
@@ -71,6 +72,8 @@ this can speed up the analyses.}
 
 \item{minCellCount}{The minimum number of subjects contributing to a count before it can be included 
 in packaged results.}
+
+\item{isClaimsData}{Boolean indicating whether the data is claims data.}
 }
 \description{
 Execute the Study
@@ -94,7 +97,8 @@ execute(connectionDetails,
         cohortTable = "cohort",
         oracleTempSchema = NULL,
         outputFolder = "c:/temp/study_results",
-        maxCores = 4)
+        maxCores = 4,
+        isClaimsData = FALSE)
 }
 
 }
