@@ -21,7 +21,7 @@
                            cohortTable,
                            oracleTempSchema,
                            outputFolder,
-                           isClaimsData) {
+                           isClaimsData = FALSE) {
   
   # Create study cohort table structure:
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = "CreateCohortTable.sql",

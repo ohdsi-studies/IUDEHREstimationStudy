@@ -37,7 +37,7 @@ exportResults <- function(outputFolder,
                           databaseDescription,
                           minCellCount = 5,
                           maxCores,
-                          isClaimsData) {
+                          isClaimsData = FALSE) {
   exportFolder <- file.path(outputFolder, "export")
   if (!file.exists(exportFolder)) {
     dir.create(exportFolder, recursive = TRUE)
@@ -168,7 +168,7 @@ exportExposures <- function(outputFolder, exportFolder, isClaimsData = FALSE) {
   readr::write_csv(exposureOfInterest, fileName)
 }
 
-exportOutcomes <- function(outputFolder, exportFolder, isClaimsData) {
+exportOutcomes <- function(outputFolder, exportFolder, isClaimsData = FALSE) {
   ParallelLogger::logInfo("Exporting outcomes")
   ParallelLogger::logInfo("- outcome_of_interest table")
   if (isClaimsData) {
@@ -673,7 +673,7 @@ exportDiagnostics <- function(outputFolder,
                               databaseId,
                               minCellCount,
                               maxCores,
-                              isClaimsData) {
+                              isClaimsData = FALSE) {
   ParallelLogger::logInfo("Exporting diagnostics")
   ParallelLogger::logInfo("- covariate_balance table")
   fileName <- file.path(exportFolder, "covariate_balance.csv")
