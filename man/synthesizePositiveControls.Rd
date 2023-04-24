@@ -11,7 +11,8 @@ synthesizePositiveControls(
   cohortTable = "cohort",
   oracleTempSchema,
   outputFolder,
-  maxCores = 1
+  maxCores = 1,
+  isClaimsData = FALSE
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ priviliges for storing temporary tables.}
 
 \item{maxCores}{How many parallel cores should be used? If more cores are made available
 this can speed up the analyses.}
+
+\item{isClaimsData}{If the data is claims data}
 }
 \description{
 Synthesize positive controls

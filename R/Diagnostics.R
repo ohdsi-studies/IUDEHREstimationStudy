@@ -24,10 +24,10 @@
 #'                             performance.
 #' @param maxCores              How many parallel cores should be used? If more cores are made
 #'                              available this can speed up the analyses.
-#' @param isClaimsData           Is the data claims data?
+#' @param isClaimsData          Is the data claims data?
 #'
 #' @export
-generateDiagnostics <- function(outputFolder, maxCores, isClaimsData) {
+generateDiagnostics <- function(outputFolder, maxCores, isClaimsData = FALSE) {
   cmOutputFolder <- file.path(outputFolder, "cmOutput")
   diagnosticsFolder <- file.path(outputFolder, "diagnostics")
   if (!file.exists(diagnosticsFolder)) {

@@ -10,7 +10,8 @@ exportResults(
   databaseName,
   databaseDescription,
   minCellCount = 5,
-  maxCores
+  maxCores,
+  isClaimsData = FALSE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ performance.}
 
 \item{maxCores}{How many parallel cores should be used? If more cores are made
 available this can speed up the analyses.}
+
+\item{isClaimsData}{Is the data claims data?}
 }
 \description{
 Outputs all results to a folder called 'export', and zips them.
