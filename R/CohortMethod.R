@@ -170,9 +170,9 @@ addAnalysisDescription <- function(data, IdColumnName = "analysisId", nameColumn
 
 createTcos <- function(outputFolder, isClaimsData = FALSE) {
   if (isClaimsData) {
-    pathToCsv <- system.file("settings", "TcosOfInterestClaims.json", package = "IUDStudy")
+    pathToCsv <- system.file("settings", "TcosOfInterestClaims.csv", package = "IUDStudy")
   } else {
-    pathToCsv <- system.file("settings", "TcosOfInterest.json", package = "IUDStudy")
+    pathToCsv <- system.file("settings", "TcosOfInterest.csv", package = "IUDStudy")
   }
   tcosOfInterest <- read.csv(pathToCsv, stringsAsFactors = FALSE)
   allControls <- getAllControls(outputFolder, isClaimsData)
@@ -209,9 +209,9 @@ createTcos <- function(outputFolder, isClaimsData = FALSE) {
 
 getOutcomesOfInterest <- function(isClaimsData = FALSE) {
   if (isClaimsData) {
-    pathToCsv <- system.file("settings", "TcosOfInterestClaims.json", package = "IUDStudy")
+    pathToCsv <- system.file("settings", "TcosOfInterestClaims.csv", package = "IUDStudy")
   } else {
-    pathToCsv <- system.file("settings", "TcosOfInterest.json", package = "IUDStudy")
+    pathToCsv <- system.file("settings", "TcosOfInterest.csv", package = "IUDStudy")
   }
   tcosOfInterest <- read.csv(pathToCsv, stringsAsFactors = FALSE) 
   outcomeIds <- as.character(tcosOfInterest$outcomeIds)

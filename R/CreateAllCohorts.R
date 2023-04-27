@@ -57,7 +57,8 @@ createCohorts <- function(connectionDetails,
                  cohortDatabaseSchema = cohortDatabaseSchema,
                  cohortTable = cohortTable,
                  oracleTempSchema = oracleTempSchema,
-                 outputFolder = outputFolder)
+                 outputFolder = outputFolder,
+                 isClaimsData = isClaimsData)
   
   if (isClaimsData) {
     pathToCsv <- system.file("settings", "NegativeControlsClaims.csv", package = "IUDStudy")
