@@ -165,8 +165,8 @@ execute <- function(connectionDetails,
     }
 
     #Continue study if T and O cohorts have a large enough cohort count
-    if (validCohort(cohort_id_1, cohortCounts, minCellCount) &&
-      validCohort(cohort_id_2, cohortCounts, minCellCount) &&
+    if (validCohort(cohort_id_1, cohortCounts, minCellCount) &
+      validCohort(cohort_id_2, cohortCounts, minCellCount) &
       validCohort(cohort_id_3, cohortCounts, minCellCount)) {
       if (runAnalyses) {
         ParallelLogger::logInfo("Running CohortMethod analyses")
@@ -255,7 +255,7 @@ execute <- function(connectionDetails,
 validCohort <- function(cohortId, cohortCounts, minCellCount) {
 
   index <- grep(cohortId, cohortCounts$cohortDefinitionId)
-  return(length(index) != 0 && cohortCounts$personCount[index] > minCellCount)
+  return(length(index) != 0 & cohortCounts$personCount[index] > minCellCount)
 
 }
 
