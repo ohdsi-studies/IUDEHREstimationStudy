@@ -183,7 +183,7 @@ prepareSubgroupTable <- function(subgroupResults, output = "latex") {
   subgroupResults$calibratedP <- sprintf("%.2f", subgroupResults$calibratedP)
   subgroupResults$calibratedP[subgroupResults$calibratedP == "NA"] <- ""
   
-  if (any(grepl("on-treatment", subgroupResults$analysisDescription)) && 
+  if (any(grepl("on-treatment", subgroupResults$analysisDescription)) & 
       any(grepl("intent-to-treat", subgroupResults$analysisDescription))) {
     idx <- grepl("on-treatment", subgroupResults$analysisDescription)
     onTreatment <- subgroupResults[idx, c("interactionCovariateName",
@@ -864,7 +864,7 @@ judgePropensityScore <- function(ps, bias) {
          " control of measured confounding by propensity score adjustment, and ",
          ifelse(goodSystematicBias(bias), "minimal", "non-negligible"),
          " residual systematic bias through negative and positive control experiments",
-         ifelse(goodPropensityScore(ps) && goodSystematicBias(bias),
+         ifelse(goodPropensityScore(ps) & goodSystematicBias(bias),
                 ", lending credibility to our effect estimates",
                 ""))
 }

@@ -10,7 +10,8 @@ createCohorts(
   cohortDatabaseSchema,
   cohortTable = "cohort",
   oracleTempSchema,
-  outputFolder
+  outputFolder,
+  isClaimsData = FALSE
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ privileges for storing temporary tables.}
 
 \item{outputFolder}{Name of local folder to place results; make sure to use forward slashes
 (/)}
+
+\item{isClaimsData}{If TRUE, the cohorts will be created using the claims data.}
 }
 \description{
 Create the exposure and outcome cohorts

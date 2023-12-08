@@ -11,7 +11,8 @@ runCohortMethod(
   cohortTable,
   oracleTempSchema,
   outputFolder,
-  maxCores
+  maxCores,
+  isClaimsData = FALSE
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ performance.}
 
 \item{maxCores}{How many parallel cores should be used? If more cores are made available
 this can speed up the analyses.}
+
+\item{isClaimsData}{If the data is claims data}
 }
 \description{
 Run CohortMethod package

@@ -1,6 +1,6 @@
 # Copyright 2020 Observational Health Data Sciences and Informatics
 #
-# This file is part of IUDEHRStudy
+# This file is part of IUDStudy
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@
 #'                             privileges for storing temporary tables.
 #' @param outputFolder         Name of local folder to place results; make sure to use forward slashes
 #'                             (/)
+#' @param isClaimsData          If TRUE, the cohorts will be created using the claims data.
 #'
 #' @export
 createCohorts <- function(connectionDetails,
@@ -43,7 +44,9 @@ createCohorts <- function(connectionDetails,
                           cohortDatabaseSchema,
                           cohortTable = "cohort",
                           oracleTempSchema,
-                          outputFolder) {
+                          outputFolder,
+                          isClaimsData = FALSE
+                          ) {
   if (!file.exists(outputFolder))
     dir.create(outputFolder)
   
@@ -54,16 +57,21 @@ createCohorts <- function(connectionDetails,
                  cohortDatabaseSchema = cohortDatabaseSchema,
                  cohortTable = cohortTable,
                  oracleTempSchema = oracleTempSchema,
-                 outputFolder = outputFolder)
+                 outputFolder = outputFolder,
+                 isClaimsData = isClaimsData)
   
-  pathToCsv <- system.file("settings", "NegativeControls.csv", package = "IUDEHRStudy")
+  if (isClaimsData) {
+    pathToCsv <- system.file("settings", "NegativeControlsClaims.csv", package = "IUDStudy")
+  } else {
+    pathToCsv <- system.file("settings", "NegativeControls.csv", package = "IUDStudy")
+  }
   negativeControls <- read.csv(pathToCsv)
   
   ParallelLogger::logInfo("Creating negative control outcome cohorts")
   # Currently assuming all negative controls are outcome controls
   negativeControlOutcomes <- negativeControls
   sql <- SqlRender::loadRenderTranslateSql("NegativeControlOutcomes.sql",
-                                           "IUDEHRStudy",
+                                           "IUDStudy",
                                            dbms = connectionDetails$dbms,
                                            oracleTempSchema = oracleTempSchema,
                                            cdm_database_schema = cdmDatabaseSchema,
@@ -75,7 +83,7 @@ createCohorts <- function(connectionDetails,
   # Check number of subjects per cohort:
   ParallelLogger::logInfo("Counting cohorts")
   sql <- SqlRender::loadRenderTranslateSql("GetCounts.sql",
-                                           "IUDEHRStudy",
+                                           "IUDStudy",
                                            dbms = connectionDetails$dbms,
                                            oracleTempSchema = oracleTempSchema,
                                            cdm_database_schema = cdmDatabaseSchema,
@@ -83,16 +91,24 @@ createCohorts <- function(connectionDetails,
                                            study_cohort_table = cohortTable)
   counts <- DatabaseConnector::querySql(conn, sql)
   colnames(counts) <- SqlRender::snakeCaseToCamelCase(colnames(counts))
-  counts <- addCohortNames(counts)
+  counts <- addCohortNames(counts, isClaimsData)
   write.csv(counts, file.path(outputFolder, "CohortCounts.csv"), row.names = FALSE)
 
   DatabaseConnector::disconnect(conn)
 }
 
-addCohortNames <- function(data, IdColumnName = "cohortDefinitionId", nameColumnName = "cohortName") {
-  pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDEHRStudy")
+addCohortNames <- function(data, IdColumnName = "cohortDefinitionId", nameColumnName = "cohortName", isClaimsData = FALSE) {
+  if (isClaimsData) {
+    pathToCsv <- system.file("settings", "CohortsToCreateClaims.csv", package = "IUDStudy")
+  } else {
+    pathToCsv <- system.file("settings", "CohortsToCreate.csv", package = "IUDStudy")
+  }
   cohortsToCreate <- read.csv(pathToCsv)
-  pathToCsv <- system.file("settings", "NegativeControls.csv", package = "IUDEHRStudy")
+  if (isClaimsData) {
+    pathToCsv <- system.file("settings", "NegativeControlsClaims.csv", package = "IUDStudy")
+  } else {
+    pathToCsv <- system.file("settings", "NegativeControls.csv", package = "IUDStudy")
+  }
   negativeControls <- read.csv(pathToCsv)
   
   idToName <- data.frame(cohortId = c(cohortsToCreate$cohortId,

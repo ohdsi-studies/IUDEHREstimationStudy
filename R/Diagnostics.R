@@ -1,6 +1,6 @@
 # Copyright 2019 Observational Health Data Sciences and Informatics
 #
-# This file is part of IUDEHRStudy
+# This file is part of IUDStudy
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,9 +24,10 @@
 #'                             performance.
 #' @param maxCores              How many parallel cores should be used? If more cores are made
 #'                              available this can speed up the analyses.
+#' @param isClaimsData          Is the data claims data?
 #'
 #' @export
-generateDiagnostics <- function(outputFolder, maxCores) {
+generateDiagnostics <- function(outputFolder, maxCores, isClaimsData = FALSE) {
   cmOutputFolder <- file.path(outputFolder, "cmOutput")
   diagnosticsFolder <- file.path(outputFolder, "diagnostics")
   if (!file.exists(diagnosticsFolder)) {
@@ -39,16 +40,16 @@ generateDiagnostics <- function(outputFolder, maxCores) {
   reference <- addAnalysisDescription(reference, "analysisId", "analysisDescription")
   analysisSummary <- read.csv(file.path(outputFolder, "analysisSummary.csv"))
   reference <- merge(reference, analysisSummary[, c("targetId", "comparatorId", "outcomeId", "analysisId", "logRr", "seLogRr")])
-  allControls <- getAllControls(outputFolder)
+  allControls <- getAllControls(outputFolder, isClaimsData)
   subsets <- split(reference, paste(reference$targetId, reference$comparatorId, reference$analysisId))
   # subset <- subsets[[1]]
   cluster <- ParallelLogger::makeCluster(min(4, maxCores))
-  ParallelLogger::clusterApply(cluster = cluster, 
-                               x = subsets, 
-                               fun = createDiagnosticsForSubset, 
-                               allControls = allControls, 
-                               outputFolder = outputFolder, 
-                               cmOutputFolder = cmOutputFolder, 
+  ParallelLogger::clusterApply(cluster = cluster,
+                               x = subsets,
+                               fun = createDiagnosticsForSubset,
+                               allControls = allControls,
+                               outputFolder = outputFolder,
+                               cmOutputFolder = cmOutputFolder,
                                diagnosticsFolder = diagnosticsFolder)
   ParallelLogger::stopCluster(cluster)
 }

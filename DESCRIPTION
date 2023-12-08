@@ -1,4 +1,4 @@
-Package: IUDEHRStudy
+Package: IUDStudy
 Type: Package
 Title: A Package Skeleton for Comparative Effectiveness Studies
 Version: 0.0.1
@@ -35,7 +35,8 @@ Remotes:
     ohdsi/CohortMethod,
     ohdsi/MethodEvaluation,
     ohdsi/OhdsiSharing
+Encoding: UTF-8
 License: Apache License 2.0
 VignetteBuilder: knitr
 LazyData: TRUE
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3

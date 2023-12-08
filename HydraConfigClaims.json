@@ -17,7 +17,7 @@
 					{"source": "name", "target": "atlasName"},
 					{"source": "id", "target": "cohortId"},
 					{"source": "name", "target": "name", "modifiers": ["convertToFileName"]}],
-		"output": "inst/settings/CohortsToCreate.csv"
+		"output": "inst/settings/CohortsToCreateClaims.csv"
 	},{
 		"type": "jsonArrayToCsv",
 		"input": "estimationAnalysisSettings.analysisSpecification.targetComparatorOutcomes",
@@ -26,7 +26,7 @@
 					{"source": "outcomeIds", "target": "outcomeIds", "separator": ";"},
 					{"source": "excludedCovariateConceptIds", "target": "excludedCovariateConceptIds", "separator": ";"},
 					{"source": "includedCovariateConceptIds", "target": "includedCovariateConceptIds", "separator": ";"}],
-		"output": "inst/settings/TcosOfInterest.csv"
+		"output": "inst/settings/TcosOfInterestClaims.csv"
 	},{
 		"type": "jsonArrayToCsv",
 		"input": "negativeControls",
@@ -35,7 +35,7 @@
 					{"source": "outcomeId", "target": "outcomeId"},
 					{"source": "outcomeName", "target": "outcomeName"},
 					{"source": "type", "target": "type"}],
-		"output": "inst/settings/NegativeControls.csv"
+		"output": "inst/settings/NegativeControlsClaims.csv"
 	},{
 		"type": "jsonArrayToJson",
 		"input": "cohortDefinitions",
@@ -56,11 +56,11 @@
 	},{
 		"type": "jsonToJson",
 		"input": "estimationAnalysisSettings.analysisSpecification.cohortMethodAnalysisList",
-		"output": "inst/settings/cmAnalysisList.json"
+		"output": "inst/settings/cmAnalysisListClaims.json"
 	},{
 		"type": "jsonToJson",
 		"input": "",
-		"output": "inst/settings/StudySpecification.json"
+		"output": "inst/settings/StudySpecificationClaims.json"
 	},{
 		"type": "jsonToRargs",
 		"input": "doPositiveControlSynthesis",

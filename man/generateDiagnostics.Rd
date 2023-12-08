@@ -4,7 +4,7 @@
 \alias{generateDiagnostics}
 \title{Generate diagnostics}
 \usage{
-generateDiagnostics(outputFolder, maxCores)
+generateDiagnostics(outputFolder, maxCores, isClaimsData = FALSE)
 }
 \arguments{
 \item{outputFolder}{Name of local folder where the results were generated; make sure to use forward slashes
@@ -13,6 +13,8 @@ performance.}
 
 \item{maxCores}{How many parallel cores should be used? If more cores are made
 available this can speed up the analyses.}
+
+\item{isClaimsData}{Is the data claims data?}
 }
 \description{
 Generate diagnostics

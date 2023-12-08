@@ -9,7 +9,7 @@ createVaccineCovariateSettings <- function(lookbackDays = 180, cohortTable = "co
   }
   ParallelLogger::logInfo(paste0("*** In createVaccineCovariateSettings for cohortTable ", cohortTable, " ***"))
   covariateSettings <- list(lookbackDays = lookbackDays, cohortTable = cohortTable, analysisId = analysisId, cohortDatabaseSchema = cohortDatabaseSchema)
-  attr(covariateSettings, "fun") <- "IUDEHRStudy::getDbVaccineCovariateData"
+  attr(covariateSettings, "fun") <- "IUDStudy::getDbVaccineCovariateData"
   class(covariateSettings) <- "covariateSettings"
   return(covariateSettings)
 }
@@ -34,7 +34,7 @@ getDbVaccineCovariateData <- function(connection,
   cohortDatabaseSchema <- covariateSettings$cohortDatabaseSchema
   
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = sqlFile,
-                                           packageName = "IUDEHRStudy",
+                                           packageName = "IUDStudy",
                                            dbms = attr(connection, "dbms"),
                                            tempEmulationSchema = oracleTempSchema,
                                            cdm_database_schema = cdmDatabaseSchema,

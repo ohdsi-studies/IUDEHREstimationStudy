@@ -44,7 +44,8 @@ execute(connectionDetails = connectionDetails,
         synthesizePositiveControls = TRUE,
         runAnalyses = TRUE,
         packageResults = TRUE,
-        maxCores = maxCores)
+        maxCores = maxCores,
+        isClaimsData = FALSE)
 
 resultsZipFile <- file.path(outputFolder, "export", paste0("Results_", databaseId, ".zip"))
 dataFolder <- file.path(outputFolder, "shinyData")
